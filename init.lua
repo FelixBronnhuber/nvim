@@ -27,9 +27,7 @@ What is Kickstart?
   Kickstart.nvim is a starting point for your own configuration.
     The goal is that you can read every line of code, top-to-bottom, understand
     what your configuration is doing, and modify it to suit your needs.
-
-    Once you've done that, you can start exploring, configuring and tinkering to
-    make Neovim your own! That might mean leaving Kickstart just the way it is for a while
+    Once you've done that, you can start exploring, configuring and tinkering to make Neovim your own! That might mean leaving Kickstart just the way it is for a while
     or immediately breaking it into modular pieces. It's up to you!
 
     If you don't know anything about Lua, I recommend taking some time to read through
@@ -222,7 +220,8 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   if vim.v.shell_error ~= 0 then
     error('Error cloning lazy.nvim:\n' .. out)
   end
-end ---@diagnostic disable-next-line: undefined-field
+end
+---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure and install plugins ]]
@@ -430,7 +429,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
-      vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
+      vim.keymap.set('n', '<leader>s.', function()
+        builtin.find_files { hidden = true, no_ignore = true }
+      end, { desc = '[S]earch Dotfiles' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
@@ -1054,36 +1055,63 @@ require('lazy').setup({
   -- },
 })
 
--- PerfAnno:
--- local perfanno = require 'perfanno'
--- local util = require 'perfanno.util'
---
--- perfanno.setup {
---   -- Creates a 10-step RGB color gradient beween background color and "#CC3300"
---   line_highlights = util.make_bg_highlights(nil, '#CC3300', 10),
---   vt_highlight = util.make_fg_highlight '#CC3300',
--- }
---
--- local keymap = vim.api.nvim_set_keymap
--- local opts = { noremap = true, silent = true }
---
--- keymap('n', '<LEADER>plf', ':PerfLoadFlat<CR>', opts)
--- keymap('n', '<LEADER>plg', ':PerfLoadCallGraph<CR>', opts)
--- keymap('n', '<LEADER>plo', ':PerfLoadFlameGraph<CR>', opts)
---
--- keymap('n', '<LEADER>pe', ':PerfPickEvent<CR>', opts)
---
--- keymap('n', '<LEADER>pa', ':PerfAnnotate<CR>', opts)
--- keymap('n', '<LEADER>pf', ':PerfAnnotateFunction<CR>', opts)
--- keymap('v', '<LEADER>pa', ':PerfAnnotateSelection<CR>', opts)
---
--- keymap('n', '<LEADER>pt', ':PerfToggleAnnotations<CR>', opts)
---
--- keymap('n', '<LEADER>ph', ':PerfHottestLines<CR>', opts)
--- keymap('n', '<LEADER>ps', ':PerfHottestSymbols<CR>', opts)
--- keymap('n', '<LEADER>pc', ':PerfHottestCallersFunction<CR>', opts)
--- keymap('v', '<LEADER>pc', ':PerfHottestCallersSelection<CR>', opts)
---
+local ensure_packer = function()
+  local fn = vim.fn
+  local install_path = fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
+  if fn.empty(fn.glob(install_path)) > 0 then
+    fn.system { 'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path }
+    vim.cmd [[packadd packer.nvim]]
+    return true
+  end
+  return false
+end
+
+local packer_bootstrap = ensure_packer()
+
+vim.opt.rtp:append(vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim')
+require('packer').startup(function(use)
+  use 'wbthomason/packer.nvim'
+  use 't-troebst/perfanno.nvim'
+  -- My plugins here
+  -- use 'foo1/bar1.nvim'
+  -- use 'foo2/bar2.nvim'
+
+  -- Automatically set up your configuration after cloning packer.nvim
+  -- Put this at the end after all plugins
+  if packer_bootstrap then
+    require('packer').sync()
+  end
+end)
+
+vim.opt.rtp:append(vim.fn.stdpath 'data' .. '/site/pack/packer/start/perfanno.nvim')
+local perfanno = require 'perfanno'
+local util = require 'perfanno.util'
+
+perfanno.setup {
+  -- Creates a 10-step RGB color gradient beween background color and "#CC3300"
+  line_highlights = util.make_bg_highlights(nil, '#CC3300', 10),
+  vt_highlight = util.make_fg_highlight '#CC3300',
+}
+
+local keymap = vim.api.nvim_set_keymap
+local opts = { noremap = true, silent = true }
+
+keymap('n', '<LEADER>plf', ':PerfLoadFlat<CR>', opts)
+keymap('n', '<LEADER>plg', ':PerfLoadCallGraph<CR>', opts)
+keymap('n', '<LEADER>plo', ':PerfLoadFlameGraph<CR>', opts)
+
+keymap('n', '<LEADER>pe', ':PerfPickEvent<CR>', opts)
+
+keymap('n', '<LEADER>pa', ':PerfAnnotate<CR>', opts)
+keymap('n', '<LEADER>pf', ':PerfAnnotateFunction<CR>', opts)
+keymap('v', '<LEADER>pa', ':PerfAnnotateSelection<CR>', opts)
+
+keymap('n', '<LEADER>pt', ':PerfToggleAnnotations<CR>', opts)
+
+keymap('n', '<LEADER>ph', ':PerfHottestLines<CR>', opts)
+keymap('n', '<LEADER>ps', ':PerfHottestSymbols<CR>', opts)
+keymap('n', '<LEADER>pc', ':PerfHottestCallersFunction<CR>', opts)
+keymap('v', '<LEADER>pc', ':PerfHottestCallersSelection<CR>', opts)
 
 for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
   dofile(vim.g.base46_cache .. v)
