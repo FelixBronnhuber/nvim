@@ -26,3 +26,13 @@ end, { desc = 'git status' })
 map('n', '<leader>gc', function()
   require('telescope.builtin').git_commits()
 end, { desc = 'git commits' })
+
+-- Show the nvui theme picker
+map('n', '<leader>tt', function()
+  require('nvchad.themes').open()
+end, { desc = 'nvui theme picker' })
+
+-- Overseer:
+map('n', '<leader>os', function()
+  require('overseer').run()
+end, { desc = 'overseer toggle' })
