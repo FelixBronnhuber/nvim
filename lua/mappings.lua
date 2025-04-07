@@ -31,8 +31,3 @@ end, { desc = 'git commits' })
 map('n', '<leader>tt', function()
   require('nvchad.themes').open()
 end, { desc = 'nvui theme picker' })
-
--- Overseer:
-map('n', '<leader>os', function()
-  require('overseer').run()
-end, { desc = 'overseer toggle' })
