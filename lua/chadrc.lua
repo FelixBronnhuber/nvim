@@ -6,7 +6,7 @@
 local M = {}
 
 M.base46 = {
-  theme = 'radium',
+  theme = 'flouromachine',
   theme_toggle = { 'radium', 'gruvbox_light' },
 
   hl_override = {
@@ -19,6 +19,14 @@ M.nvdash = {
   load_on_startup = true,
   header = {
     '                            ',
+    '    ▐ ▄  ▌ ▐·▪  • ▌ ▄ ·.    ',
+    '   •█▌▐█▪█·█▌██ ·██ ▐███▪   ',
+    '   ▐█▐▐▌▐█▐█•▐█·▐█ ▌▐▌▐█·   ',
+    '   ██▐█▌ ███ ▐█▌██ ██▌▐█▌   ',
+    '   ▀▀ █▪. ▀  ▀▀▀▀▀  █▪▀▀▀   ',
+    '                            ',
+    '     (ノಠ益ಠ)ノ彡 ɯıʌu      ',
+    '                            ',
     '     Powered By  eovim    ',
     '                            ',
   },
@@ -28,7 +36,6 @@ M.nvdash = {
     { txt = '  Search Recent Files', keys = 'Spc s o', cmd = 'Telescope oldfiles' },
     { txt = '  Search grep', keys = 'Spc s g', cmd = 'Telescope grep_string' },
     { txt = '󱥚  Themes', keys = 'tt', cmd = ":lua require('nvchad.themes').open()" },
-    { txt = '  NvimTree', keys = '\\', cmd = ':NvimTreeToggle' },
   },
 }
 
@@ -44,7 +51,7 @@ M.ui = {
     style = 'bordered',
   },
   statusline = {
-    theme = 'default', -- default/vscode/vscode_colored/minimal
+    theme = 'vscode_colored', -- default/vscode/vscode_colored/minimal
     -- default/round/block/arrow separators work only for default statusline theme
     -- round and block will work for minimal theme only
     separator_style = 'default',
@@ -77,7 +84,7 @@ M.lsp = { signature = true }
 
 M.colorify = {
   enabled = true,
-  mode = 'bg', -- fg, bg, virtual
+  mode = 'virtual', -- fg, bg, virtual
   virt_text = '󱓻 ',
   highlight = { hex = true, lspvars = true },
 }

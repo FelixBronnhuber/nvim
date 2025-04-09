@@ -8,7 +8,7 @@ M.base_30 = {
   black2 = '#10151d', -- titleBar.inactiveBackground
   one_bg = '#1f2939', -- textBlockQuote.border / input.background
   one_bg2 = '#1f2939', -- dropdown.background
-  one_bg3 = '#10151d', -- fallback lighter bg
+  one_bg3 = '#d9dfe7', -- fallback lighter bg
   grey = '#a4afbd', -- textPreformat.foreground
   grey_fg = '#8b98a9', -- descriptionForeground
   grey_fg2 = '#3d495a', -- checkbox.border
@@ -59,7 +59,7 @@ M.polish_hl = {
     Comment = { fg = '#7f8d9f', italic = true },
   },
   treesitter = {
-    ['@variable'] = { fg = '#d9dfe7' },
+    ['@variable'] = { fg = '#ffb256' },
     ['@function'] = { fg = '#a87ffb' },
     ['@keyword'] = { fg = '#fd8da3' },
   },
