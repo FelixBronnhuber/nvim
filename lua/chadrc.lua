@@ -77,7 +77,7 @@ M.lsp = { signature = true }
 
 M.colorify = {
   enabled = true,
-  mode = 'virtual', -- fg, bg, virtual
+  mode = 'bg', -- fg, bg, virtual
   virt_text = '󱓻 ',
   highlight = { hex = true, lspvars = true },
 }
