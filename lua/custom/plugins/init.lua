@@ -11,6 +11,33 @@ return {
     opts = {
       bigfile = { enabled = true },
       scroll = { enabled = true },
+      dashboard = {
+        sections = {
+          {
+            section = 'terminal',
+            cmd = 'chafa ~/.config/nvim/res/rustacean.png --format symbols --symbols vhalf --size 60x17 --stretch',
+            height = 17,
+            padding = 1,
+          },
+          {
+            pane = 1,
+            icon = ' ',
+            title = 'Git Status',
+            section = 'terminal',
+            enabled = true,
+            cmd = 'git status --short --branch --renames',
+            height = 8,
+            padding = 1,
+            ttl = 5 * 60,
+            indent = 3,
+          },
+          {
+            pane = 1,
+            { section = 'keys', gap = 1, padding = 1 },
+            { section = 'startup' },
+          },
+        },
+      },
     },
   },
 }

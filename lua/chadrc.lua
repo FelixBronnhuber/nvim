@@ -15,29 +15,29 @@ M.base46 = {
   },
 }
 
-M.nvdash = {
-  load_on_startup = true,
-  header = {
-    '                            ',
-    '    ▐ ▄  ▌ ▐·▪  • ▌ ▄ ·.    ',
-    '   •█▌▐█▪█·█▌██ ·██ ▐███▪   ',
-    '   ▐█▐▐▌▐█▐█•▐█·▐█ ▌▐▌▐█·   ',
-    '   ██▐█▌ ███ ▐█▌██ ██▌▐█▌   ',
-    '   ▀▀ █▪. ▀  ▀▀▀▀▀  █▪▀▀▀   ',
-    '                            ',
-    '     (ノಠ益ಠ)ノ彡 ɯıʌu      ',
-    '                            ',
-    '     Powered By  eovim    ',
-    '                            ',
-  },
-
-  buttons = {
-    { txt = '  Search File', keys = 'Spc s f', cmd = 'Telescope find_files' },
-    { txt = '  Search Recent Files', keys = 'Spc s o', cmd = 'Telescope oldfiles' },
-    { txt = '  Search grep', keys = 'Spc s g', cmd = 'Telescope grep_string' },
-    { txt = '󱥚  Themes', keys = 'tt', cmd = ":lua require('nvchad.themes').open()" },
-  },
-}
+-- M.nvdash = {
+--   load_on_startup = true,
+--   header = {
+--     '                            ',
+--     '    ▐ ▄  ▌ ▐·▪  • ▌ ▄ ·.    ',
+--     '   •█▌▐█▪█·█▌██ ·██ ▐███▪   ',
+--     '   ▐█▐▐▌▐█▐█•▐█·▐█ ▌▐▌▐█·   ',
+--     '   ██▐█▌ ███ ▐█▌██ ██▌▐█▌   ',
+--     '   ▀▀ █▪. ▀  ▀▀▀▀▀  █▪▀▀▀   ',
+--     '                            ',
+--     '     (ノಠ益ಠ)ノ彡 ɯıʌu      ',
+--     '                            ',
+--     '     Powered By  eovim    ',
+--     '                            ',
+--   },
+--
+--   buttons = {
+--     { txt = '  Search File', keys = 'Spc s f', cmd = 'Telescope find_files' },
+--     { txt = '  Search Recent Files', keys = 'Spc s o', cmd = 'Telescope oldfiles' },
+--     { txt = '  Search grep', keys = 'Spc s g', cmd = 'Telescope grep_string' },
+--     { txt = '󱥚  Themes', keys = 'tt', cmd = ":lua require('nvchad.themes').open()" },
+--   },
+-- }
 
 M.ui = {
   cmp = {
