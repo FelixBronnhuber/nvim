@@ -6,7 +6,7 @@
 local M = {}
 
 M.base46 = {
-  theme = 'flouromachine',
+  theme = 'radium',
   theme_toggle = { 'radium', 'gruvbox_light' },
 
   hl_override = {
@@ -42,7 +42,7 @@ M.base46 = {
 M.ui = {
   cmp = {
     lspkind_text = true,
-    style = 'atom_colored', -- default/flat_light/flat_dark/atom/atom_colored
+    style = 'default', -- default/flat_light/flat_dark/atom/atom_colored
     format_colors = {
       tailwind = false,
     },

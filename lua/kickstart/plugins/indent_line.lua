@@ -1,9 +1,22 @@
-return {
-  'lukas-reineke/indent-blankline.nvim',
-  main = 'ibl',
-  ---@module "ibl"
-  ---@class ibl.config
-  opts = {
-    indent = { char = '┊' },
-  },
-}
+return {}
+
+-- return {
+--   'lukas-reineke/indent-blankline.nvim',
+--   main = 'ibl',
+--   ---@module "ibl"
+--   ---@class ibl.config
+--   opts = {
+--     indent = {
+--       char = '┊',
+--       -- char = '▏',
+--       -- char = '│',
+--       -- char = '▎',
+--       -- char = '▍',
+--       -- char = '▌',
+--       -- char = '▏',
+--     },
+--     scope = {
+--       enabled = true,
+--     },
+--   },
+-- }
