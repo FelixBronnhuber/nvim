@@ -91,39 +91,39 @@ require('lazy').setup {
     },
   },
 
-  -- {
-  --   'folke/tokyonight.nvim',
-  --   lazy = false,
-  --   priority = 1000,
-  --   opts = {
-  --     transparent = false,
-  --     styles = {
-  --       sidebars = 'transparent',
-  --       floats = 'transparent',
-  --     },
-  --   },
-  --   init = function()
-  --     vim.cmd [[colorscheme tokyonight]]
-  --   end,
-  -- },
-
   {
-    'sainnhe/edge',
+    'folke/tokyonight.nvim',
     lazy = false,
-    priority = 2000,
-    config = function()
-      -- Optionally configure and load the colorscheme
-      -- directly inside the plugin declaration.
-      vim.g.edge_style = 'default'
-      vim.g.edge_float_style = 'dim'
-      vim.g.edge_enable_italic = true
-      vim.g.edge_current_word = 'bold'
-      vim.g.edge_transparent_background = 2
-      vim.g.edge_dim_inactive_windows = 1
-      vim.cmd.colorscheme 'edge'
+    priority = 1000,
+    opts = {
+      transparent = false,
+      styles = {
+        sidebars = 'transparent',
+        floats = 'transparent',
+      },
+    },
+    init = function()
+      vim.cmd [[colorscheme tokyonight]]
     end,
   },
 
+  -- {
+  --   'sainnhe/edge',
+  --   lazy = false,
+  --   priority = 2000,
+  --   config = function()
+  --     -- Optionally configure and load the colorscheme
+  --     -- directly inside the plugin declaration.
+  --     vim.g.edge_style = 'default'
+  --     vim.g.edge_float_style = 'dim'
+  --     vim.g.edge_enable_italic = true
+  --     vim.g.edge_current_word = 'bold'
+  --     vim.g.edge_transparent_background = 2
+  --     vim.g.edge_dim_inactive_windows = 1
+  --     vim.cmd.colorscheme 'edge'
+  --   end,
+  -- },
+  --
   ---@module 'snacks'
   {
     'folke/snacks.nvim',
@@ -454,9 +454,9 @@ require('lazy').setup {
           progress = {
             display = {
               render_limit = 32,
-              done_ttl = 20,
-              done_icon = '󰄵',
-              progress_icon = { 'dots' },
+              done_ttl = 16,
+              done_icon = ' ',
+              progress_icon = { 'circle_halves' },
             },
           },
           notification = {
@@ -464,8 +464,8 @@ require('lazy').setup {
               stack_upwards = false,
             },
             window = {
-              border = 'solid',
-              winblend = 100,
+              border = 'rounded',
+              winblend = 0,
               align = 'top',
             },
           },
@@ -619,10 +619,38 @@ require('lazy').setup {
       local capabilities = require('blink.cmp').get_lsp_capabilities()
 
       local servers = {
+        cmake = {
+          commad = 'cmake-language-server',
+          filetypes = { 'cmake', 'CMakeLists.txt' },
+          settings = {
+            rootPatterns = { 'build/' },
+            initializationOptions = {
+              buildDirectory = 'build',
+            },
+          },
+        },
         clangd = {},
         gopls = {},
         pyright = {},
-        rust_analyzer = {},
+        rust_analyzer = {
+          settings = {
+            ['rust-analyzer'] = {
+              cargo = {
+                buildScripts = {
+                  enable = true,
+                },
+              },
+              procMacro = {
+                enable = true,
+              },
+              check = {
+                -- overrideCommand = { 'cargo', 'clippy', '--message-format=json', '--workspace' },
+                command = 'clippy',
+              },
+              checkOnSave = true,
+            },
+          },
+        },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
