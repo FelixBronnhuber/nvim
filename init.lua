@@ -95,15 +95,19 @@ require('lazy').setup {
     'folke/tokyonight.nvim',
     lazy = false,
     priority = 1000,
+    ---@module 'tokyonight'
+    ---@class tokyonight.Config
     opts = {
-      transparent = false,
+      transparent = true,
       styles = {
         sidebars = 'transparent',
         floats = 'transparent',
+        terminal_colors = true,
+        comments = { italic = true },
       },
     },
     init = function()
-      vim.cmd [[colorscheme tokyonight]]
+      vim.cmd.colorscheme 'tokyonight'
     end,
   },
 
@@ -196,8 +200,8 @@ require('lazy').setup {
         },
       },
       input = { enabled = true },
-      -- picker = { enabled = true },
-      notifier = { enabled = true },
+      picker = { enabled = false },
+      notifier = { enabled = false },
       quickfile = { enabled = true },
       scope = { enabled = true },
       scroll = { enabled = true },
@@ -267,6 +271,52 @@ require('lazy').setup {
       }
     end,
   },
+
+  {
+    'rcarriga/nvim-notify',
+    config = function()
+      vim.notify = require 'notify'
+    end,
+  },
+  {
+    'folke/noice.nvim',
+    event = 'VeryLazy',
+    dependencies = {
+      'MunifTanjim/nui.nvim',
+      'rcarriga/nvim-notify',
+    },
+    config = function()
+      require('noice').setup {
+        lsp = {
+          -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+          override = {
+            ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+            ['vim.lsp.util.stylize_markdown'] = true,
+            ['cmp.entry.get_documentation'] = true, -- requires hrsh7th/nvim-cmp
+          },
+        },
+        -- you can enable a preset for easier configuration
+        presets = {
+          bottom_search = true, -- use a classic bottom cmdline for search
+          command_palette = false, -- position the cmdline and popupmenu together
+          long_message_to_split = true, -- long messages will be sent to a split
+          inc_rename = false, -- enables an input dialog for inc-rename.nvim
+          lsp_doc_border = true, -- add a border to hover docs and signature help
+        },
+      }
+    end,
+  },
+
+  -- {
+  --   'catgoose/nvim-colorizer.lua',
+  --   event = 'BufReadPre',
+  --   init = function()
+  --     require('colorizer').setup {
+  --       mode = 'virtualtext',
+  --       virtualtext = '󱓻',
+  --     }
+  --   end,
+  -- },
 
   {
     'folke/which-key.nvim',
@@ -448,29 +498,29 @@ require('lazy').setup {
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      {
-        'j-hui/fidget.nvim',
-        opts = {
-          progress = {
-            display = {
-              render_limit = 32,
-              done_ttl = 16,
-              done_icon = ' ',
-              progress_icon = { 'circle_halves' },
-            },
-          },
-          notification = {
-            view = {
-              stack_upwards = false,
-            },
-            window = {
-              border = 'rounded',
-              winblend = 0,
-              align = 'top',
-            },
-          },
-        },
-      },
+      -- {
+      --   'j-hui/fidget.nvim',
+      --   opts = {
+      --     progress = {
+      --       display = {
+      --         render_limit = 32,
+      --         done_ttl = 16,
+      --         done_icon = ' ',
+      --         progress_icon = { 'circle_halves' },
+      --       },
+      --     },
+      --     notification = {
+      --       view = {
+      --         stack_upwards = false,
+      --       },
+      --       window = {
+      --         border = 'rounded',
+      --         winblend = 0,
+      --         align = 'top',
+      --       },
+      --     },
+      --   },
+      -- },
       {
         'zbirenbaum/copilot.lua',
         cmd = 'Copilot',
@@ -586,6 +636,12 @@ require('lazy').setup {
         end,
       })
 
+      local diagnostic_message_symbol = {
+        [vim.diagnostic.severity.ERROR] = ' ',
+        [vim.diagnostic.severity.WARN] = ' ',
+        [vim.diagnostic.severity.INFO] = ' ',
+        [vim.diagnostic.severity.HINT] = '󰛨 ',
+      }
       -- Diagnostic Config
       -- See :help vim.diagnostic.Opts
       vim.diagnostic.config {
@@ -593,25 +649,14 @@ require('lazy').setup {
         float = { border = 'rounded', source = 'if_many' },
         underline = { severity = vim.diagnostic.severity.ERROR },
         signs = vim.g.have_nerd_font and {
-          text = {
-            [vim.diagnostic.severity.ERROR] = ' ',
-            [vim.diagnostic.severity.WARN] = ' ',
-            [vim.diagnostic.severity.INFO] = ' ',
-            [vim.diagnostic.severity.HINT] = '󰛨 ',
-          },
+          text = diagnostic_message_symbol,
         } or {},
         virtual_text = false,
         virtual_lines = {
           source = 'if_many',
           spacing = 2,
           format = function(diagnostic)
-            local diagnostic_message = {
-              [vim.diagnostic.severity.ERROR] = ' ' .. diagnostic.message,
-              [vim.diagnostic.severity.WARN] = ' ' .. diagnostic.message,
-              [vim.diagnostic.severity.INFO] = ' ' .. diagnostic.message,
-              [vim.diagnostic.severity.HINT] = '󰛨 ' .. diagnostic.message,
-            }
-            return diagnostic_message[diagnostic.severity]
+            return diagnostic_message_symbol[diagnostic.severity] .. diagnostic.message
           end,
         },
       }
@@ -684,20 +729,6 @@ require('lazy').setup {
           end,
         },
       }
-
-      -- vim.api.nvim_create_autocmd('LspProgress', {
-      --   ---@param ev {data: {client_id: integer, params: lsp.ProgressParams}}
-      --   callback = function(ev)
-      --     local spinner = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' }
-      --     vim.notify(vim.lsp.status(), 'info', {
-      --       id = 'lsp_progress',
-      --       title = 'LSP Progress',
-      --       opts = function(notif)
-      --         notif.icon = ev.data.params.value.kind == 'end' and ' ' or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
-      --       end,
-      --     })
-      --   end,
-      -- })
     end,
   },
 
@@ -787,7 +818,7 @@ require('lazy').setup {
       },
       completion = {
         menu = {
-          border = 'none',
+          border = 'rounded',
           draw = {
             columns = {
               { 'kind_icon', gap = 1 },
@@ -802,7 +833,12 @@ require('lazy').setup {
         },
         -- By default, you may press `<c-space>` to show the documentation.
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
-        documentation = { auto_show = true, auto_show_delay_ms = 200 },
+        documentation = {
+          auto_show = true,
+          auto_show_delay_ms = 200,
+          treesitter_highlighting = true,
+          window = { border = 'rounded' },
+        },
         ghost_text = {
           enabled = vim.g.ai_cmp,
         },
