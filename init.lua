@@ -98,10 +98,10 @@ require('lazy').setup {
     ---@module 'tokyonight'
     ---@class tokyonight.Config
     opts = {
-      transparent = true,
+      transparent = false,
       styles = {
-        sidebars = 'transparent',
-        floats = 'transparent',
+        -- sidebars = 'transparent',
+        -- floats = 'transparent',
         terminal_colors = true,
         comments = { italic = true },
       },
