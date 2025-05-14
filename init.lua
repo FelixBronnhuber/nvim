@@ -98,6 +98,7 @@ require('lazy').setup {
     ---@module 'tokyonight'
     ---@class tokyonight.Config
     opts = {
+      style = 'moon',
       transparent = false,
       styles = {
         -- sidebars = 'transparent',
@@ -127,7 +128,7 @@ require('lazy').setup {
   --     vim.cmd.colorscheme 'edge'
   --   end,
   -- },
-  --
+
   ---@module 'snacks'
   {
     'folke/snacks.nvim',
@@ -143,13 +144,61 @@ require('lazy').setup {
           { section = 'header' },
           { section = 'keys', gap = 1, padding = 1 },
           {
-            pane = 2,
+            pane = 1,
             icon = ' ',
             desc = 'Browse Repo',
             padding = 1,
             key = 'b',
             action = function()
-              Snacks.gitbrowse()
+              Snacks.gitbrowse {
+                notify = true,
+                open = function(url)
+                  vim.cmd('silent !wsl-open ' .. url)
+                end,
+                what = 'repo',
+                -- patterns to transform remotes to an actual URL
+                remote_patterns = {
+                  { '^(https?://.*)%.git$', '%1' },
+                  { '^git@(.+):(.+)%.git$', 'https://%1/%2' },
+                  { '^git@(.+):(.+)$', 'https://%1/%2' },
+                  { '^git@(.+)/(.+)$', 'https://%1/%2' },
+                  { '^org%-%d+@(.+):(.+)%.git$', 'https://%1/%2' },
+                  { '^ssh://git@(.*)$', 'https://%1' },
+                  { '^ssh://([^:/]+)(:%d+)/(.*)$', 'https://%1/%3' },
+                  { '^ssh://([^/]+)/(.*)$', 'https://%1/%2' },
+                  { 'ssh%.dev%.azure%.com/v3/(.*)/(.*)$', 'dev.azure.com/%1/_git/%2' },
+                  { '^https://%w*@(.*)', 'https://%1' },
+                  { '^git@(.*)', 'https://%1' },
+                  { ':%d+', '' },
+                  { '%.git$', '' },
+                },
+                url_patterns = {
+                  ['github%.com'] = {
+                    branch = '/tree/{branch}',
+                    file = '/blob/{branch}/{file}#L{line_start}-L{line_end}',
+                    permalink = '/blob/{commit}/{file}#L{line_start}-L{line_end}',
+                    commit = '/commit/{commit}',
+                  },
+                  ['gitlab%.com'] = {
+                    branch = '/-/tree/{branch}',
+                    file = '/-/blob/{branch}/{file}#L{line_start}-L{line_end}',
+                    permalink = '/-/blob/{commit}/{file}#L{line_start}-L{line_end}',
+                    commit = '/-/commit/{commit}',
+                  },
+                  ['bitbucket%.org'] = {
+                    branch = '/src/{branch}',
+                    file = '/src/{branch}/{file}#lines-{line_start}-L{line_end}',
+                    permalink = '/src/{commit}/{file}#lines-{line_start}-L{line_end}',
+                    commit = '/commits/{commit}',
+                  },
+                  ['git.sr.ht'] = {
+                    branch = '/tree/{branch}',
+                    file = '/tree/{branch}/item/{file}',
+                    permalink = '/tree/{commit}/item/{file}#L{line_start}',
+                    commit = '/commit/{commit}',
+                  },
+                },
+              }
             end,
           },
           function()
@@ -164,7 +213,7 @@ require('lazy').setup {
             }
             return vim.tbl_map(function(cmd)
               return vim.tbl_extend('force', {
-                pane = 2,
+                pane = 1,
                 section = 'terminal',
                 enabled = in_git,
                 padding = 1,
@@ -228,8 +277,8 @@ require('lazy').setup {
         options = {
           icons_enabled = true,
           theme = 'auto',
-          section_separators = { left = '', right = '' },
-          component_separators = { left = '', right = '' },
+          -- section_separators = { left = '', right = '' },
+          -- component_separators = { left = '', right = '' },
           disabled_filetypes = { statusline = { 'lazy' } },
         },
         sections = {
@@ -498,35 +547,41 @@ require('lazy').setup {
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      -- {
-      --   'j-hui/fidget.nvim',
-      --   opts = {
-      --     progress = {
-      --       display = {
-      --         render_limit = 32,
-      --         done_ttl = 16,
-      --         done_icon = ' ',
-      --         progress_icon = { 'circle_halves' },
-      --       },
-      --     },
-      --     notification = {
-      --       view = {
-      --         stack_upwards = false,
-      --       },
-      --       window = {
-      --         border = 'rounded',
-      --         winblend = 0,
-      --         align = 'top',
-      --       },
-      --     },
-      --   },
-      -- },
+      {
+        'j-hui/fidget.nvim',
+        opts = {
+          progress = {
+            display = {
+              render_limit = 32,
+              done_ttl = 16,
+              done_icon = ' ',
+              progress_icon = { 'circle_halves' },
+            },
+          },
+          notification = {
+            view = {
+              stack_upwards = false,
+            },
+            window = {
+              border = 'rounded',
+              winblend = 0,
+              align = 'top',
+            },
+          },
+        },
+      },
       {
         'zbirenbaum/copilot.lua',
         cmd = 'Copilot',
         event = 'InsertEnter',
         opts = {
-          suggestion = { enabled = true },
+          copilot_model = 'claude-3.7-sonnet',
+          filetypes = {
+            yaml = false,
+            help = false,
+            ['*'] = true,
+          },
+          suggestion = { enabled = false },
           panel = { enabled = false },
         },
       },
@@ -630,6 +685,11 @@ require('lazy').setup {
           -- This may be unwanted, since they displace some of your code
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
             map('<leader>th', function()
+              vim.notify(
+                'Toggling inlay hints (' .. tostring(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf }) .. ')',
+                'info',
+                { title = 'Inlay Hints' }
+              )
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
           end
@@ -696,6 +756,17 @@ require('lazy').setup {
             },
           },
         },
+        -- harper_ls = {
+        --   filetypes = { 'markdown' },
+        --   settings = {
+        --     ['harper-ls'] = {
+        --       linters = {
+        --         SentenceCapitalization = false,
+        --         SpellCheck = false,
+        --       },
+        --     },
+        --   },
+        -- },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -775,39 +846,16 @@ require('lazy').setup {
     event = 'VimEnter',
     version = '1.*',
     dependencies = {
-      -- Copilot support;
       'fang2hou/blink-copilot',
-      -- Snippet Engine
-      {
-        'L3MON4D3/LuaSnip',
-        version = '2.*',
-        build = (function()
-          -- Build Step is needed for regex support in snippets.
-          -- This step is not supported in many windows environments.
-          -- Remove the below condition to re-enable on windows.
-          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-            return
-          end
-          return 'make install_jsregexp'
-        end)(),
-        dependencies = {
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
-        },
-        opts = {},
-      },
       'folke/lazydev.nvim',
     },
-    sources = {},
-    signature = { enabled = true },
-    ghost_text = { enabled = true },
     --- @module 'blink.cmp'
     --- @type blink.cmp.Config
     opts = {
+      -- ghost_text = { enabled = true },
+      enabled = function()
+        return true
+      end,
       keymap = {
         preset = 'default',
       },
@@ -844,25 +892,22 @@ require('lazy').setup {
         },
       },
       sources = {
-        default = { 'lsp', 'snippets', 'path', 'copilot' },
+        default = { 'lsp', 'snippets', 'path', 'copilot', 'buffer' },
         providers = {
           copilot = {
             name = 'copilot',
-            enabled = true,
             module = 'blink-copilot',
             score_offset = 0,
             async = true,
           },
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
           buffer = {
-            min_keyword_length = 1,
             score_offset = -1,
           },
         },
       },
-      snippets = { preset = 'luasnip' },
       -- See :h blink-cmp-config-fuzzy for more information
-      fuzzy = { implementation = 'lua' },
+      fuzzy = { implementation = 'prefer_rust_with_warning' },
       -- Shows a signature help window while you type arguments for a function
       signature = {
         enabled = true,
@@ -920,6 +965,65 @@ require('lazy').setup {
 
   { import = 'custom.plugins' },
   { import = 'kickstart.plugins' },
+
+  -- {
+  --   't-troebst/perfanno.nvim',
+  --   dependencies = {
+  --     'nvim-telescope/telescope.nvim',
+  --   },
+  --   config = function()
+  --     local perfanno = require 'perfanno'
+  --     local util = require 'perfanno.util'
+  --
+  --     perfanno.setup {
+  --       line_highlights = util.make_bg_highlights(nil, '#CC3300', 10),
+  --       vt_highlight = util.make_fg_highlight '#CC3300',
+  --     }
+  --
+  --     local keymap = vim.api.nvim_set_keymap
+  --     local opts = { noremap = true, silent = true }
+  --
+  --     keymap('n', '<LEADER>plf', ':PerfLoadFlat<CR>', opts)
+  --     keymap('n', '<LEADER>plg', ':PerfLoadCallGraph<CR>', opts)
+  --     keymap('n', '<LEADER>plo', ':PerfLoadFlameGraph<CR>', opts)
+  --
+  --     keymap('n', '<LEADER>pe', ':PerfPickEvent<CR>', opts)
+  --
+  --     keymap('n', '<LEADER>pa', ':PerfAnnotate<CR>', opts)
+  --     keymap('n', '<LEADER>pf', ':PerfAnnotateFunction<CR>', opts)
+  --     keymap('v', '<LEADER>pa', ':PerfAnnotateSelection<CR>', opts)
+  --
+  --     keymap('n', '<LEADER>pt', ':PerfToggleAnnotations<CR>', opts)
+  --
+  --     keymap('n', '<LEADER>ph', ':PerfHottestLines<CR>', opts)
+  --     keymap('n', '<LEADER>ps', ':PerfHottestSymbols<CR>', opts)
+  --     keymap('n', '<LEADER>pc', ':PerfHottestCallersFunction<CR>', opts)
+  --     keymap('v', '<LEADER>pc', ':PerfHottestCallersSelection<CR>', opts)
+  --
+  --     local telescope = require 'telescope'
+  --     local actions = telescope.extensions.perfanno.actions
+  --     telescope.setup {
+  --       extensions = {
+  --         perfanno = {
+  --           -- Special mappings in the telescope finders
+  --           mappings = {
+  --             ['i'] = {
+  --               -- Find hottest callers of selected entry
+  --               ['<C-h>'] = actions.hottest_callers,
+  --               -- Find hottest callees of selected entry
+  --               ['<C-l>'] = actions.hottest_callees,
+  --             },
+  --
+  --             ['n'] = {
+  --               ['gu'] = actions.hottest_callers,
+  --               ['gd'] = actions.hottest_callees,
+  --             },
+  --           },
+  --         },
+  --       },
+  --     }
+  --   end,
+  -- },
 }
 
 require 'mappings'
