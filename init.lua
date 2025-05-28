@@ -54,6 +54,34 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+vim.keymap.set('n', 'g<Space>', function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local clangd_client = nil
+  for _, client in pairs(vim.lsp.get_clients { bufnr = bufnr }) do
+    if client.name == 'clangd' then
+      clangd_client = client
+      break
+    end
+  end
+  if not clangd_client then
+    vim.notify('Clangd is not attached to this buffer', vim.log.levels.WARN)
+    return
+  end
+
+  local params = { uri = vim.uri_from_bufnr(bufnr) }
+  clangd_client.request('textDocument/switchSourceHeader', params, function(err, result)
+    if err then
+      vim.notify('LSP error: ' .. err.message, vim.log.levels.ERROR)
+      return
+    end
+    if not result then
+      vim.notify('No corresponding header/source found', vim.log.levels.WARN)
+      return
+    end
+    vim.cmd('vsplit ' .. vim.fn.fnameescape(vim.uri_to_fname(result)))
+  end, bufnr)
+end, { desc = 'Clangd: Switch header/source in vsplit' })
+
 -- INFO: Otherwise the telescope window will have double borders
 local hover = vim.lsp.buf.hover
 ---@diagnostic disable-next-line: duplicate-set-field
@@ -91,26 +119,26 @@ require('lazy').setup {
     },
   },
 
-  {
-    'folke/tokyonight.nvim',
-    lazy = false,
-    priority = 1000,
-    ---@module 'tokyonight'
-    ---@class tokyonight.Config
-    opts = {
-      style = 'moon',
-      transparent = false,
-      styles = {
-        -- sidebars = 'transparent',
-        -- floats = 'transparent',
-        terminal_colors = true,
-        comments = { italic = true },
-      },
-    },
-    init = function()
-      vim.cmd.colorscheme 'tokyonight'
-    end,
-  },
+  -- {
+  --   'folke/tokyonight.nvim',
+  --   lazy = false,
+  --   priority = 1000,
+  --   ---@module 'tokyonight'
+  --   ---@class tokyonight.Config
+  --   opts = {
+  --     style = 'moon',
+  --     transparent = false,
+  --     styles = {
+  --       -- sidebars = 'transparent',
+  --       -- floats = 'transparent',
+  --       terminal_colors = true,
+  --       comments = { italic = true },
+  --     },
+  --   },
+  --   init = function()
+  --     vim.cmd.colorscheme 'tokyonight'
+  --   end,
+  -- },
 
   -- {
   --   'sainnhe/edge',
@@ -128,6 +156,34 @@ require('lazy').setup {
   --     vim.cmd.colorscheme 'edge'
   --   end,
   -- },
+
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+    config = function()
+      require('catppuccin').setup {
+        transparent_background = false,
+        flavour = 'mocha',
+        term_colors = true,
+        styles = {
+          comments = { 'italic' },
+          loops = { 'italic' },
+          conditionals = { 'italic' },
+        },
+        integrations = {
+          cmp = true,
+          gitsigns = true,
+          telescope = true,
+          treesitter = true,
+          which_key = true,
+          noice = true,
+        },
+      }
+
+      vim.cmd.colorscheme 'catppuccin'
+    end,
+  },
 
   ---@module 'snacks'
   {
@@ -270,6 +326,14 @@ require('lazy').setup {
   },
 
   {
+    'folke/todo-comments.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    init = function()
+      require('todo-comments').setup {}
+    end,
+  },
+
+  {
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
@@ -285,6 +349,7 @@ require('lazy').setup {
           lualine_a = { 'mode' },
           lualine_b = { 'branch', 'diff', 'diagnostics' },
           lualine_c = { 'filename' },
+          -- lualine_d = { require('noice').api.status.command, cond = require('noice').api.status.mode.has },
           lualine_x = { 'encoding', 'fileformat', 'filetype' },
           lualine_y = { 'progress' },
           lualine_z = { 'location' },
@@ -323,12 +388,18 @@ require('lazy').setup {
 
   {
     'rcarriga/nvim-notify',
-    config = function()
-      vim.notify = require 'notify'
+    opts = {
+      background_colour = '#000000',
+    },
+    init = function()
+      local notify = require 'notify'
+      vim.notify = notify
     end,
   },
+
   {
     'folke/noice.nvim',
+    enabled = false,
     event = 'VeryLazy',
     dependencies = {
       'MunifTanjim/nui.nvim',
@@ -336,6 +407,15 @@ require('lazy').setup {
     },
     config = function()
       require('noice').setup {
+        messages = {
+          enabled = true,
+          view = 'notify',
+          view_error = 'notify',
+          view_warn = 'notify',
+          view_history = 'messages',
+          view_search = 'virtualtext',
+        },
+
         lsp = {
           -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
           override = {
@@ -966,64 +1046,64 @@ require('lazy').setup {
   { import = 'custom.plugins' },
   { import = 'kickstart.plugins' },
 
-  -- {
-  --   't-troebst/perfanno.nvim',
-  --   dependencies = {
-  --     'nvim-telescope/telescope.nvim',
-  --   },
-  --   config = function()
-  --     local perfanno = require 'perfanno'
-  --     local util = require 'perfanno.util'
-  --
-  --     perfanno.setup {
-  --       line_highlights = util.make_bg_highlights(nil, '#CC3300', 10),
-  --       vt_highlight = util.make_fg_highlight '#CC3300',
-  --     }
-  --
-  --     local keymap = vim.api.nvim_set_keymap
-  --     local opts = { noremap = true, silent = true }
-  --
-  --     keymap('n', '<LEADER>plf', ':PerfLoadFlat<CR>', opts)
-  --     keymap('n', '<LEADER>plg', ':PerfLoadCallGraph<CR>', opts)
-  --     keymap('n', '<LEADER>plo', ':PerfLoadFlameGraph<CR>', opts)
-  --
-  --     keymap('n', '<LEADER>pe', ':PerfPickEvent<CR>', opts)
-  --
-  --     keymap('n', '<LEADER>pa', ':PerfAnnotate<CR>', opts)
-  --     keymap('n', '<LEADER>pf', ':PerfAnnotateFunction<CR>', opts)
-  --     keymap('v', '<LEADER>pa', ':PerfAnnotateSelection<CR>', opts)
-  --
-  --     keymap('n', '<LEADER>pt', ':PerfToggleAnnotations<CR>', opts)
-  --
-  --     keymap('n', '<LEADER>ph', ':PerfHottestLines<CR>', opts)
-  --     keymap('n', '<LEADER>ps', ':PerfHottestSymbols<CR>', opts)
-  --     keymap('n', '<LEADER>pc', ':PerfHottestCallersFunction<CR>', opts)
-  --     keymap('v', '<LEADER>pc', ':PerfHottestCallersSelection<CR>', opts)
-  --
-  --     local telescope = require 'telescope'
-  --     local actions = telescope.extensions.perfanno.actions
-  --     telescope.setup {
-  --       extensions = {
-  --         perfanno = {
-  --           -- Special mappings in the telescope finders
-  --           mappings = {
-  --             ['i'] = {
-  --               -- Find hottest callers of selected entry
-  --               ['<C-h>'] = actions.hottest_callers,
-  --               -- Find hottest callees of selected entry
-  --               ['<C-l>'] = actions.hottest_callees,
-  --             },
-  --
-  --             ['n'] = {
-  --               ['gu'] = actions.hottest_callers,
-  --               ['gd'] = actions.hottest_callees,
-  --             },
-  --           },
-  --         },
-  --       },
-  --     }
-  --   end,
-  -- },
+  {
+    't-troebst/perfanno.nvim',
+    dependencies = {
+      'nvim-telescope/telescope.nvim',
+    },
+    config = function()
+      local perfanno = require 'perfanno'
+      local util = require 'perfanno.util'
+
+      perfanno.setup {
+        line_highlights = util.make_bg_highlights(nil, '#CC3300', 10),
+        vt_highlight = util.make_fg_highlight '#CC3300',
+      }
+
+      local keymap = vim.api.nvim_set_keymap
+      local opts = { noremap = true, silent = true }
+
+      keymap('n', '<LEADER>plf', ':PerfLoadFlat<CR>', opts)
+      keymap('n', '<LEADER>plg', ':PerfLoadCallGraph<CR>', opts)
+      keymap('n', '<LEADER>plo', ':PerfLoadFlameGraph<CR>', opts)
+
+      keymap('n', '<LEADER>pe', ':PerfPickEvent<CR>', opts)
+
+      keymap('n', '<LEADER>pa', ':PerfAnnotate<CR>', opts)
+      keymap('n', '<LEADER>pf', ':PerfAnnotateFunction<CR>', opts)
+      keymap('v', '<LEADER>pa', ':PerfAnnotateSelection<CR>', opts)
+
+      keymap('n', '<LEADER>pt', ':PerfToggleAnnotations<CR>', opts)
+
+      keymap('n', '<LEADER>ph', ':PerfHottestLines<CR>', opts)
+      keymap('n', '<LEADER>ps', ':PerfHottestSymbols<CR>', opts)
+      keymap('n', '<LEADER>pc', ':PerfHottestCallersFunction<CR>', opts)
+      keymap('v', '<LEADER>pc', ':PerfHottestCallersSelection<CR>', opts)
+
+      local telescope = require 'telescope'
+      local actions = telescope.extensions.perfanno.actions
+      telescope.setup {
+        extensions = {
+          perfanno = {
+            -- Special mappings in the telescope finders
+            mappings = {
+              ['i'] = {
+                -- Find hottest callers of selected entry
+                ['<C-h>'] = actions.hottest_callers,
+                -- Find hottest callees of selected entry
+                ['<C-l>'] = actions.hottest_callees,
+              },
+
+              ['n'] = {
+                ['gu'] = actions.hottest_callers,
+                ['gd'] = actions.hottest_callees,
+              },
+            },
+          },
+        },
+      }
+    end,
+  },
 }
 
 require 'mappings'
