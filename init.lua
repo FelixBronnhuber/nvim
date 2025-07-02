@@ -4,7 +4,7 @@ vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = true
 
 -- NvChad cache path
--- vim.g.base46_cache = vim.fn.stdpath 'data' .. '/base46_cache/'
+vim.g.base46_cache = vim.fn.stdpath 'data' .. '/base46_cache/'
 
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -110,11 +110,11 @@ require('lazy').setup {
     'lewis6991/gitsigns.nvim',
     opts = {
       signs = {
-        add = { text = '' },
-        change = { text = '' },
-        delete = { text = '' },
-        topdelete = { text = '' },
-        changedelete = { text = '' },
+        add = { text = '' },
+        change = { text = '󰇘' },
+        delete = { text = '' },
+        topdelete = { text = '' },
+        changedelete = { text = '' },
       },
     },
   },
@@ -157,33 +157,33 @@ require('lazy').setup {
   --   end,
   -- },
 
-  {
-    'catppuccin/nvim',
-    name = 'catppuccin',
-    priority = 1000,
-    config = function()
-      require('catppuccin').setup {
-        transparent_background = false,
-        flavour = 'mocha',
-        term_colors = true,
-        styles = {
-          comments = { 'italic' },
-          loops = { 'italic' },
-          conditionals = { 'italic' },
-        },
-        integrations = {
-          cmp = true,
-          gitsigns = true,
-          telescope = true,
-          treesitter = true,
-          which_key = true,
-          noice = true,
-        },
-      }
-
-      vim.cmd.colorscheme 'catppuccin'
-    end,
-  },
+  -- {
+  --   'catppuccin/nvim',
+  --   name = 'catppuccin',
+  --   priority = 1000,
+  --   config = function()
+  --     require('catppuccin').setup {
+  --       transparent_background = false,
+  --       flavour = 'mocha',
+  --       term_colors = true,
+  --       styles = {
+  --         comments = { 'italic' },
+  --         loops = { 'italic' },
+  --         conditionals = { 'italic' },
+  --       },
+  --       integrations = {
+  --         cmp = true,
+  --         gitsigns = true,
+  --         telescope = true,
+  --         treesitter = true,
+  --         which_key = true,
+  --         noice = true,
+  --       },
+  --     }
+  --
+  --     vim.cmd.colorscheme 'catppuccin'
+  --   end,
+  -- },
 
   ---@module 'snacks'
   {
@@ -281,7 +281,6 @@ require('lazy').setup {
           { section = 'startup' },
         },
       },
-      explorer = { enabled = true },
       indent = {
         enabled = true,
         indent = {
@@ -304,6 +303,7 @@ require('lazy').setup {
           },
         },
       },
+      explorer = { enabled = false },
       input = { enabled = true },
       picker = { enabled = false },
       notifier = { enabled = false },
@@ -333,58 +333,58 @@ require('lazy').setup {
     end,
   },
 
-  {
-    'nvim-lualine/lualine.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
-    config = function()
-      require('lualine').setup {
-        options = {
-          icons_enabled = true,
-          theme = 'auto',
-          -- section_separators = { left = '', right = '' },
-          -- component_separators = { left = '', right = '' },
-          disabled_filetypes = { statusline = { 'lazy' } },
-        },
-        sections = {
-          lualine_a = { 'mode' },
-          lualine_b = { 'branch', 'diff', 'diagnostics' },
-          lualine_c = { 'filename' },
-          -- lualine_d = { require('noice').api.status.command, cond = require('noice').api.status.mode.has },
-          lualine_x = { 'encoding', 'fileformat', 'filetype' },
-          lualine_y = { 'progress' },
-          lualine_z = { 'location' },
-        },
-        inactive_sections = {
-          lualine_a = {},
-          lualine_b = {},
-          lualine_c = { 'filename' },
-          lualine_x = { 'location' },
-          lualine_y = {},
-          lualine_z = {},
-        },
-        tabline = {},
-        extensions = {},
-      }
-    end,
-  },
+  -- {
+  --   'nvim-lualine/lualine.nvim',
+  --   dependencies = { 'nvim-tree/nvim-web-devicons' },
+  --   config = function()
+  --     require('lualine').setup {
+  --       options = {
+  --         icons_enabled = true,
+  --         theme = 'auto',
+  --         section_separators = { left = '', right = '' },
+  --         component_separators = { left = '', right = '' },
+  --         disabled_filetypes = { statusline = { 'lazy' } },
+  --       },
+  --       sections = {
+  --         lualine_a = { 'mode' },
+  --         lualine_b = { 'branch', 'diff', 'diagnostics' },
+  --         lualine_c = { 'filename' },
+  --         -- lualine_d = { require('noice').api.status.command, cond = require('noice').api.status.mode.has },
+  --         lualine_x = { 'encoding', 'fileformat', 'filetype' },
+  --         lualine_y = { 'progress' },
+  --         lualine_z = { 'location' },
+  --       },
+  --       inactive_sections = {
+  --         lualine_a = {},
+  --         lualine_b = {},
+  --         lualine_c = { 'filename' },
+  --         lualine_x = { 'location' },
+  --         lualine_y = {},
+  --         lualine_z = {},
+  --       },
+  --       tabline = {},
+  --       extensions = {},
+  --     }
+  --   end,
+  -- },
 
-  {
-    'akinsho/bufferline.nvim',
-    version = '*',
-    dependencies = 'nvim-tree/nvim-web-devicons',
-    config = function()
-      local bufferline = require 'bufferline'
-      bufferline.setup {
-        options = {
-          style_preset = {
-            -- bufferline.style_preset.no_italic,
-            -- bufferline.style_preset.no_bold,
-            bufferline.style_preset.minimal,
-          },
-        },
-      }
-    end,
-  },
+  -- {
+  --   'akinsho/bufferline.nvim',
+  --   version = '*',
+  --   dependencies = 'nvim-tree/nvim-web-devicons',
+  --   config = function()
+  --     local bufferline = require 'bufferline'
+  --     bufferline.setup {
+  --       options = {
+  --         style_preset = {
+  --           -- bufferline.style_preset.no_italic,
+  --           -- bufferline.style_preset.no_bold,
+  --           bufferline.style_preset.minimal,
+  --         },
+  --       },
+  --     }
+  --   end,
+  -- },
 
   {
     'rcarriga/nvim-notify',
@@ -815,7 +815,7 @@ require('lazy').setup {
           },
         },
         clangd = {},
-        gopls = {},
+        -- gopls = {},
         pyright = {},
         rust_analyzer = {
           settings = {
@@ -837,14 +837,9 @@ require('lazy').setup {
           },
         },
         -- harper_ls = {
-        --   filetypes = { 'markdown' },
+        --   filetypes = { 'markdown', 'tex' },
         --   settings = {
-        --     ['harper-ls'] = {
-        --       linters = {
-        --         SentenceCapitalization = false,
-        --         SpellCheck = false,
-        --       },
-        --     },
+        --     ['harper-ls'] = {},
         --   },
         -- },
         lua_ls = {
@@ -995,30 +990,37 @@ require('lazy').setup {
           border = 'shadow',
         },
       },
+      -- cmdline = {
+      --   sources = { 'path',  },
+      -- },
     },
     opts_extend = { 'sources.default' },
   },
 
-  'nvim-lua/plenary.nvim',
+  { 'nvim-lua/plenary.nvim' },
+
   { 'nvim-tree/nvim-web-devicons', lazy = true },
 
-  -- {
-  --   'nvchad/ui',
-  --   config = function()
-  --     require 'nvchad'
-  --   end,
-  -- },
-  --
-  -- {
-  --   'nvchad/base46',
-  --   lazy = true,
-  --   build = function()
-  --     require('base46').load_all_highlights()
-  --   end,
-  -- },
-  --
-  -- 'nvchad/volt',
-  -- { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  {
+    'nvchad/ui',
+    config = function()
+      require 'nvchad'
+    end,
+  },
+
+  -- { import = 'nvchad.blink.lazyspec' },
+
+  {
+    'nvchad/base46',
+    lazy = true,
+    build = function()
+      require('base46').load_all_highlights()
+    end,
+  },
+
+  { 'nvchad/volt' },
+
+  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
   {
     'echasnovski/mini.nvim',
@@ -1109,6 +1111,6 @@ require('lazy').setup {
 require 'mappings'
 
 -- NvChad cache
--- for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
---   dofile(vim.g.base46_cache .. v)
--- end
+for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
+  dofile(vim.g.base46_cache .. v)
+end

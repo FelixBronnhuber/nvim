@@ -6,8 +6,8 @@
 local M = {}
 
 M.base46 = {
-  theme = 'radium',
-  theme_toggle = { 'radium', 'gruvbox_light' },
+  theme = 'carbonfox',
+  theme_toggle = { 'carbonfox', 'gruvbox_light' },
 
   hl_override = {
     Comment = { italic = true },

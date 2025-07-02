@@ -17,13 +17,6 @@ return {
     -- See Commands section for default commands if you want to lazy load on them
     init = function()
       require('CopilotChat').setup {}
-      -- Disable 'blink.cmp' for CopilotChat:
-      vim.api.nvim_create_autocmd('FileType', {
-        pattern = { 'copilot-chat', 'copilot-overlay' },
-        callback = function()
-          vim.b.completion = false
-        end,
-      })
     end,
   },
 }
