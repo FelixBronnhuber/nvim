@@ -36,10 +36,10 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
-vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
-vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
-vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
-vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+-- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+-- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+-- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+-- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
@@ -195,90 +195,9 @@ require('lazy').setup {
       bigfile = { enabled = true },
       dashboard = {
         enabled = true,
-
         sections = {
-          { section = 'header' },
-          { section = 'keys', gap = 1, padding = 1 },
-          {
-            pane = 1,
-            icon = ' ',
-            desc = 'Browse Repo',
-            padding = 1,
-            key = 'b',
-            action = function()
-              Snacks.gitbrowse {
-                notify = true,
-                open = function(url)
-                  vim.cmd('silent !wsl-open ' .. url)
-                end,
-                what = 'repo',
-                -- patterns to transform remotes to an actual URL
-                remote_patterns = {
-                  { '^(https?://.*)%.git$', '%1' },
-                  { '^git@(.+):(.+)%.git$', 'https://%1/%2' },
-                  { '^git@(.+):(.+)$', 'https://%1/%2' },
-                  { '^git@(.+)/(.+)$', 'https://%1/%2' },
-                  { '^org%-%d+@(.+):(.+)%.git$', 'https://%1/%2' },
-                  { '^ssh://git@(.*)$', 'https://%1' },
-                  { '^ssh://([^:/]+)(:%d+)/(.*)$', 'https://%1/%3' },
-                  { '^ssh://([^/]+)/(.*)$', 'https://%1/%2' },
-                  { 'ssh%.dev%.azure%.com/v3/(.*)/(.*)$', 'dev.azure.com/%1/_git/%2' },
-                  { '^https://%w*@(.*)', 'https://%1' },
-                  { '^git@(.*)', 'https://%1' },
-                  { ':%d+', '' },
-                  { '%.git$', '' },
-                },
-                url_patterns = {
-                  ['github%.com'] = {
-                    branch = '/tree/{branch}',
-                    file = '/blob/{branch}/{file}#L{line_start}-L{line_end}',
-                    permalink = '/blob/{commit}/{file}#L{line_start}-L{line_end}',
-                    commit = '/commit/{commit}',
-                  },
-                  ['gitlab%.com'] = {
-                    branch = '/-/tree/{branch}',
-                    file = '/-/blob/{branch}/{file}#L{line_start}-L{line_end}',
-                    permalink = '/-/blob/{commit}/{file}#L{line_start}-L{line_end}',
-                    commit = '/-/commit/{commit}',
-                  },
-                  ['bitbucket%.org'] = {
-                    branch = '/src/{branch}',
-                    file = '/src/{branch}/{file}#lines-{line_start}-L{line_end}',
-                    permalink = '/src/{commit}/{file}#lines-{line_start}-L{line_end}',
-                    commit = '/commits/{commit}',
-                  },
-                  ['git.sr.ht'] = {
-                    branch = '/tree/{branch}',
-                    file = '/tree/{branch}/item/{file}',
-                    permalink = '/tree/{commit}/item/{file}#L{line_start}',
-                    commit = '/commit/{commit}',
-                  },
-                },
-              }
-            end,
-          },
-          function()
-            local in_git = Snacks.git.get_root() ~= nil
-            local cmds = {
-              {
-                icon = ' ',
-                title = 'Git Status',
-                cmd = 'git --no-pager diff --stat -B -M -C',
-                height = 10,
-              },
-            }
-            return vim.tbl_map(function(cmd)
-              return vim.tbl_extend('force', {
-                pane = 1,
-                section = 'terminal',
-                enabled = in_git,
-                padding = 1,
-                ttl = 5 * 60,
-                indent = 3,
-              }, cmd)
-            end, cmds)
-          end,
-          { section = 'startup' },
+          { section = 'header', padding = 1 },
+          { section = 'startup', padding = 1 },
         },
       },
       indent = {
@@ -315,13 +234,13 @@ require('lazy').setup {
       terminal = { enabled = true, win = { style = 'terminal' } },
     },
     keys = {
-      {
-        '\\',
-        function()
-          Snacks.explorer.open()
-        end,
-        desc = 'Snacks Explorer',
-      },
+      -- {
+      --   '\\',
+      --   function()
+      --     Snacks.explorer.open()
+      --   end,
+      --   desc = 'Snacks Explorer',
+      -- },
     },
   },
 
@@ -388,9 +307,7 @@ require('lazy').setup {
 
   {
     'rcarriga/nvim-notify',
-    opts = {
-      background_colour = '#000000',
-    },
+    opts = {},
     init = function()
       local notify = require 'notify'
       vim.notify = notify
@@ -399,7 +316,7 @@ require('lazy').setup {
 
   {
     'folke/noice.nvim',
-    enabled = false,
+    enabled = true,
     event = 'VeryLazy',
     dependencies = {
       'MunifTanjim/nui.nvim',
@@ -426,8 +343,8 @@ require('lazy').setup {
         },
         -- you can enable a preset for easier configuration
         presets = {
-          bottom_search = true, -- use a classic bottom cmdline for search
-          command_palette = false, -- position the cmdline and popupmenu together
+          bottom_search = false, -- use a classic bottom cmdline for search
+          command_palette = true, -- position the cmdline and popupmenu together
           long_message_to_split = true, -- long messages will be sent to a split
           inc_rename = false, -- enables an input dialog for inc-rename.nvim
           lsp_doc_border = true, -- add a border to hover docs and signature help
@@ -627,29 +544,30 @@ require('lazy').setup {
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      {
-        'j-hui/fidget.nvim',
-        opts = {
-          progress = {
-            display = {
-              render_limit = 32,
-              done_ttl = 16,
-              done_icon = ' ',
-              progress_icon = { 'circle_halves' },
-            },
-          },
-          notification = {
-            view = {
-              stack_upwards = false,
-            },
-            window = {
-              border = 'rounded',
-              winblend = 0,
-              align = 'top',
-            },
-          },
-        },
-      },
+      -- {
+      --   'j-hui/fidget.nvim',
+      --   opts = {
+      --     progress = {
+      --       display = {
+      --         render_limit = 32,
+      --         done_ttl = 16,
+      --         done_icon = ' ',
+      --         progress_icon = { 'circle_halves' },
+      --       },
+      --     },
+      --     notification = {
+      --       view = {
+      --         stack_upwards = false,
+      --       },
+      --       window = {
+      --         border = 'rounded',
+      --         winblend = 0,
+      --         align = 'top',
+      --       },
+      --     },
+      --   },
+      -- },
+
       {
         'zbirenbaum/copilot.lua',
         cmd = 'Copilot',
@@ -791,14 +709,14 @@ require('lazy').setup {
         signs = vim.g.have_nerd_font and {
           text = diagnostic_message_symbol,
         } or {},
-        virtual_text = false,
-        virtual_lines = {
-          source = 'if_many',
-          spacing = 2,
-          format = function(diagnostic)
-            return diagnostic_message_symbol[diagnostic.severity] .. diagnostic.message
-          end,
-        },
+        virtual_text = true,
+        -- virtual_lines = {
+        --   source = 'if_many',
+        --   spacing = 2,
+        --   format = function(diagnostic)
+        --     return diagnostic_message_symbol[diagnostic.severity] .. diagnostic.message
+        --   end,
+        -- },
       }
 
       local capabilities = require('blink.cmp').get_lsp_capabilities()
@@ -1047,6 +965,13 @@ require('lazy').setup {
 
   { import = 'custom.plugins' },
   { import = 'kickstart.plugins' },
+
+  {
+    'nmac427/guess-indent.nvim',
+    config = function()
+      require('guess-indent').setup {}
+    end,
+  },
 
   {
     't-troebst/perfanno.nvim',

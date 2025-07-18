@@ -2,21 +2,31 @@ return {
   {
     'CopilotC-Nvim/CopilotChat.nvim',
     dependencies = {
-      { 'github/copilot.vim' }, -- or zbirenbaum/copilot.lua
+      -- { 'github/copilot.vim' }, -- or zbirenbaum/copilot.lua
+      {
+        'zbirenbaum/copilot.lua',
+        cmd = 'Copilot',
+        event = 'InsertEnter',
+        opts = {
+          suggestion = { enabled = false },
+          panel = { enabled = false },
+          -- filetypes = {
+          --   markdown = true,
+          --   help = true,
+          -- },
+        },
+      },
       { 'nvim-lua/plenary.nvim', branch = 'master' }, -- for curl, log and async functions
     },
     build = 'make tiktoken', -- Only on MacOS or Linux
-    opts = {
-      -- See Configuration section for options
-      window = {
-        title = 'Copilot Chat',
-        border = 'rounded', -- 'single' | 'double' | 'rounded' | 'solid' | 'shadow'
-      },
-      chat_autocomplete = true,
-    },
-    -- See Commands section for default commands if you want to lazy load on them
     init = function()
-      require('CopilotChat').setup {}
+      require('CopilotChat').setup {
+        chat_autocomplete = false,
+      }
+      -- Keymap for toggeling Copilot Chat
+      vim.keymap.set('n', '<leader>cc', function()
+        require('CopilotChat').toggle()
+      end, { desc = 'Toggle Copilot Chat' })
     end,
   },
 }

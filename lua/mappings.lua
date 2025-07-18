@@ -6,6 +6,9 @@ map('n', '<leader>x', function()
   vim.cmd 'bd'
 end, { desc = 'buffer close' })
 
+-- Closes all buffers
+map('n', '<leader>X', ':bufdo bd!<CR>', { noremap = true, silent = true, desc = 'close all buffers' })
+
 -- Telescope Git
 map('n', '<leader>gs', function()
   require('telescope.builtin').git_status()
