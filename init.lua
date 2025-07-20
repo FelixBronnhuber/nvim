@@ -195,6 +195,12 @@ require('lazy').setup {
       bigfile = { enabled = true },
       dashboard = {
         enabled = true,
+        preset = {
+          header = [[
+█ █    █ ██
+██    █ ██
+█ █      █ █  █]],
+        },
         sections = {
           { section = 'header', padding = 1 },
           { section = 'startup', padding = 1 },
@@ -232,6 +238,7 @@ require('lazy').setup {
       statuscolumn = { enabled = true },
       words = { enabled = true },
       terminal = { enabled = true, win = { style = 'terminal' } },
+      animate = { enabled = true, easing = 'inOutCubic', fps = 60 },
     },
     keys = {
       -- {
@@ -252,114 +259,52 @@ require('lazy').setup {
     end,
   },
 
-  -- {
-  --   'nvim-lualine/lualine.nvim',
-  --   dependencies = { 'nvim-tree/nvim-web-devicons' },
-  --   config = function()
-  --     require('lualine').setup {
-  --       options = {
-  --         icons_enabled = true,
-  --         theme = 'auto',
-  --         section_separators = { left = '', right = '' },
-  --         component_separators = { left = '', right = '' },
-  --         disabled_filetypes = { statusline = { 'lazy' } },
-  --       },
-  --       sections = {
-  --         lualine_a = { 'mode' },
-  --         lualine_b = { 'branch', 'diff', 'diagnostics' },
-  --         lualine_c = { 'filename' },
-  --         -- lualine_d = { require('noice').api.status.command, cond = require('noice').api.status.mode.has },
-  --         lualine_x = { 'encoding', 'fileformat', 'filetype' },
-  --         lualine_y = { 'progress' },
-  --         lualine_z = { 'location' },
-  --       },
-  --       inactive_sections = {
-  --         lualine_a = {},
-  --         lualine_b = {},
-  --         lualine_c = { 'filename' },
-  --         lualine_x = { 'location' },
-  --         lualine_y = {},
-  --         lualine_z = {},
-  --       },
-  --       tabline = {},
-  --       extensions = {},
-  --     }
-  --   end,
-  -- },
-
-  -- {
-  --   'akinsho/bufferline.nvim',
-  --   version = '*',
-  --   dependencies = 'nvim-tree/nvim-web-devicons',
-  --   config = function()
-  --     local bufferline = require 'bufferline'
-  --     bufferline.setup {
-  --       options = {
-  --         style_preset = {
-  --           -- bufferline.style_preset.no_italic,
-  --           -- bufferline.style_preset.no_bold,
-  --           bufferline.style_preset.minimal,
-  --         },
-  --       },
-  --     }
-  --   end,
-  -- },
-
   {
     'rcarriga/nvim-notify',
-    opts = {},
+    opts = {
+      background_colour = '#FFFFFF',
+    },
     init = function()
       local notify = require 'notify'
       vim.notify = notify
     end,
   },
 
-  {
-    'folke/noice.nvim',
-    enabled = true,
-    event = 'VeryLazy',
-    dependencies = {
-      'MunifTanjim/nui.nvim',
-      'rcarriga/nvim-notify',
-    },
-    config = function()
-      require('noice').setup {
-        messages = {
-          enabled = true,
-          view = 'notify',
-          view_error = 'notify',
-          view_warn = 'notify',
-          view_history = 'messages',
-          view_search = 'virtualtext',
-        },
-
-        lsp = {
-          -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
-          override = {
-            ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
-            ['vim.lsp.util.stylize_markdown'] = true,
-            ['cmp.entry.get_documentation'] = true, -- requires hrsh7th/nvim-cmp
-          },
-        },
-        -- you can enable a preset for easier configuration
-        presets = {
-          bottom_search = false, -- use a classic bottom cmdline for search
-          command_palette = true, -- position the cmdline and popupmenu together
-          long_message_to_split = true, -- long messages will be sent to a split
-          inc_rename = false, -- enables an input dialog for inc-rename.nvim
-          lsp_doc_border = true, -- add a border to hover docs and signature help
-        },
-      }
-    end,
-  },
-
   -- {
-  --   'catgoose/nvim-colorizer.lua',
-  --   event = 'BufReadPre',
-  --   init = function()
-  --     require('colorizer').setup {
-  --       mode = 'virtualtext',
-  --       virtualtext = '󱓻',
+  --   'folke/noice.nvim',
+  --   enabled = true,
+  --   event = 'VeryLazy',
+  --   dependencies = {
+  --     'MunifTanjim/nui.nvim',
+  --     'rcarriga/nvim-notify',
+  --   },
+  --   config = function()
+  --     require('noice').setup {
+  --       messages = {
+  --         enabled = true,
+  --         view = 'notify',
+  --         view_error = 'notify',
+  --         view_warn = 'notify',
+  --         view_history = 'messages',
+  --         view_search = 'virtualtext',
+  --       },
+  --
+  --       lsp = {
+  --         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+  --         override = {
+  --           ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+  --           ['vim.lsp.util.stylize_markdown'] = true,
+  --           ['cmp.entry.get_documentation'] = true, -- requires hrsh7th/nvim-cmp
+  --         },
+  --       },
+  --       -- you can enable a preset for easier configuration
+  --       presets = {
+  --         bottom_search = false, -- use a classic bottom cmdline for search
+  --         command_palette = true, -- position the cmdline and popupmenu together
+  --         long_message_to_split = true, -- long messages will be sent to a split
+  --         inc_rename = false, -- enables an input dialog for inc-rename.nvim
+  --         -- lsp_doc_border = true, -- add a border to hover docs and signature help
+  --       },
   --     }
   --   end,
   -- },
@@ -573,7 +518,7 @@ require('lazy').setup {
         cmd = 'Copilot',
         event = 'InsertEnter',
         opts = {
-          copilot_model = 'claude-3.7-sonnet',
+          copilot_model = 'gpt-4o',
           filetypes = {
             yaml = false,
             help = false,
@@ -583,8 +528,30 @@ require('lazy').setup {
           panel = { enabled = false },
         },
       },
+
       {
         'saghen/blink.cmp',
+        init = function()
+          local autocmd = vim.api.nvim_create_autocmd
+          local ui_helpers = vim.api.nvim_create_augroup('UiHelpers', { clear = true })
+
+          -- disable buggy anims in completion windows
+          autocmd('User', {
+            group = ui_helpers,
+            pattern = 'BlinkCmpMenuOpen',
+            callback = function()
+              vim.g.snacks_animate = false
+            end,
+          })
+
+          autocmd('User', {
+            group = ui_helpers,
+            pattern = 'BlinkCmpMenuClose',
+            callback = function()
+              vim.g.snacks_animate = true
+            end,
+          })
+        end,
       },
       opts_extend = { 'sources.default' },
     },
@@ -709,7 +676,24 @@ require('lazy').setup {
         signs = vim.g.have_nerd_font and {
           text = diagnostic_message_symbol,
         } or {},
-        virtual_text = true,
+        virtual_text = {
+          source = 'if_many',
+          spacing = 2,
+          format = function(diagnostic)
+            local diagnostic_message = {
+              [vim.diagnostic.severity.ERROR] = diagnostic.message,
+              [vim.diagnostic.severity.WARN] = diagnostic.message,
+              [vim.diagnostic.severity.INFO] = diagnostic.message,
+              [vim.diagnostic.severity.HINT] = diagnostic.message,
+            }
+            return diagnostic_message[diagnostic.severity]
+          end,
+          prefix = function(diagnostic)
+            return diagnostic_message_symbol[diagnostic.severity] or ''
+          end,
+          hl_mode = 'combine',
+        },
+        -- TODO: Make this toggelable (between virtual_lines and virtual_text)
         -- virtual_lines = {
         --   source = 'if_many',
         --   spacing = 2,
@@ -779,10 +763,12 @@ require('lazy').setup {
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'rustfmt', -- Used to format Rust code
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
+        automatic_enable = true,
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
         handlers = {
@@ -845,17 +831,13 @@ require('lazy').setup {
     --- @module 'blink.cmp'
     --- @type blink.cmp.Config
     opts = {
-      -- ghost_text = { enabled = true },
-      enabled = function()
-        return true
-      end,
       keymap = {
         preset = 'default',
       },
       appearance = {
         -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
         -- Adjusts spacing to ensure icons are aligned
-        nerd_font_variant = 'normal',
+        nerd_font_variant = 'mono',
       },
       completion = {
         menu = {
@@ -876,7 +858,7 @@ require('lazy').setup {
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
         documentation = {
           auto_show = true,
-          auto_show_delay_ms = 200,
+          auto_show_delay_ms = 500,
           treesitter_highlighting = true,
           window = { border = 'rounded' },
         },
@@ -891,7 +873,7 @@ require('lazy').setup {
             name = 'copilot',
             module = 'blink-copilot',
             score_offset = 0,
-            async = true,
+            -- async = true,
           },
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
           buffer = {
@@ -903,9 +885,9 @@ require('lazy').setup {
       fuzzy = { implementation = 'prefer_rust_with_warning' },
       -- Shows a signature help window while you type arguments for a function
       signature = {
-        enabled = true,
+        enabled = false,
         window = {
-          border = 'shadow',
+          border = 'rounded',
         },
       },
       -- cmdline = {
@@ -932,7 +914,9 @@ require('lazy').setup {
     'nvchad/base46',
     lazy = true,
     build = function()
-      require('base46').load_all_highlights()
+      local base46 = require 'base46'
+      base46.load_highlights()
+      base46.toggle_transparency()
     end,
   },
 
