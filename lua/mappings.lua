@@ -22,3 +22,8 @@ end, { desc = 'git commits' })
 map('n', '<leader>tt', function()
   require('nvchad.themes').open()
 end, { desc = 'nvui theme picker' })
+
+-- Toggle the base46 theme transparency
+map('n', '<leader>tT', function()
+  require('base46').toggle_transparency()
+end, { desc = 'theme transparency' })
