@@ -24,23 +24,32 @@ vim.pack.add({
 	{ src = "https://github.com/tpope/vim-sleuth.git" },
 	{ src = "https://github.com/neovim/nvim-lspconfig.git" },
 	{ src = "https://github.com/folke/neodev.nvim.git" },
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter.git" },
+	{ src = "https://github.com/shaunsingh/nord.nvim.git" },
 })
+
+vim.cmd[[colorscheme nord]]
 
 require("neodev").setup()
-
--- then setup your lsp server as usual
 local lspconfig = require('lspconfig')
-
--- example to setup lua_ls and enable call snippets
 lspconfig.lua_ls.setup({
-  settings = {
-    Lua = {
-      completion = {
-        callSnippet = "Replace"
-      }
-    }
-  }
+	settings = {
+		Lua = {
+			completion = {
+				callSnippet = "Replace"
+			}
+		}
+	}
 })
+
+require("nvim-treesitter.configs").setup {
+	ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "markdown", "rust", "python" },
+	modules = {},
+	sync_install = false,
+	auto_install = false,
+	ignore_install = {},
+	highlight = { enable = true, additional_vim_regex_highlighting = false },
+}
 
 vim.lsp.enable({ "lua_ls", "rust_analyzer", "clangd", "pyright" })
 
