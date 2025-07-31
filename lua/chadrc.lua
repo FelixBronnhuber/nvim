@@ -12,6 +12,7 @@ M.base46 = {
   hl_override = {
     Comment = { italic = true },
     ['@comment'] = { italic = true },
+    Visual = { bg = '#333333' }, -- #AA4433
   },
 }
 
@@ -51,10 +52,10 @@ M.ui = {
     style = 'bordered',
   },
   statusline = {
-    theme = 'vscode_colored', -- default/vscode/vscode_colored/minimal
+    theme = 'default', -- default/vscode/vscode_colored/minimal
     -- default/round/block/arrow separators work only for default statusline theme
     -- round and block will work for minimal theme only
-    separator_style = 'default',
+    separator_style = 'block',
     order = nil,
     modules = nil,
   },
