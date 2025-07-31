@@ -6,6 +6,7 @@ vim.g.have_nerd_font = true
 -- NvChad cache path
 vim.g.base46_cache = vim.fn.stdpath 'data' .. '/base46_cache/'
 
+vim.opt.swapfile = false
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.mouse = 'a'
@@ -915,8 +916,8 @@ require('lazy').setup {
     lazy = true,
     build = function()
       local base46 = require 'base46'
+      -- base46.toggle_transparency()
       base46.load_highlights()
-      base46.toggle_transparency()
     end,
   },
 
