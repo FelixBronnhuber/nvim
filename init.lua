@@ -25,10 +25,11 @@ vim.pack.add({
 	{ src = "https://github.com/neovim/nvim-lspconfig.git" },
 	{ src = "https://github.com/folke/neodev.nvim.git" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter.git" },
-	{ src = "https://github.com/shaunsingh/nord.nvim.git" },
+	{ src = "https://github.com/EdenEast/nightfox.nvim.git" },
+	{ src = "https://github.com/Saghen/blink.cmp.git" },
 })
 
-vim.cmd[[colorscheme nord]]
+vim.cmd("colorscheme carbonfox")
 
 require("neodev").setup()
 local lspconfig = require('lspconfig')
@@ -52,6 +53,7 @@ require("nvim-treesitter.configs").setup {
 }
 
 vim.lsp.enable({ "lua_ls", "rust_analyzer", "clangd", "pyright" })
+vim.lsp.inlay_hint.enable(true)
 
 vim.diagnostic.config({
 	virtual_lines = false,
@@ -75,4 +77,8 @@ vim.diagnostic.config({
 			[vim.diagnostic.severity.WARN] = "WarningMsg",
 		},
 	},
+})
+
+require("blink.cmp").setup({
+	fuzzy = { implementation = "lua", }
 })
