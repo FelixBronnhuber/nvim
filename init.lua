@@ -18,7 +18,7 @@ vim.g.mapleader = " "
 vim.keymap.set('n', '<leader>', '<Nop>', { silent = true, noremap = true })
 vim.keymap.set('n', '<leader>w', ':w<CR>')
 vim.keymap.set('n', '<leader>W', ':wa<CR>:qa<CR>')
-vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)
+vim.keymap.set('n', '<leader>F', vim.lsp.buf.format)
 
 vim.pack.add({
 	{ src = "https://github.com/tpope/vim-sleuth.git" },
@@ -27,20 +27,17 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter.git" },
 	{ src = "https://github.com/EdenEast/nightfox.nvim.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
+	{ src = "https://github.com/lewis6991/gitsigns.nvim.git" },
+	{ src = "https://github.com/dmtrKovalenko/fff.nvim.git" },
 })
 
+require("nightfox").setup({ options = { transparent = true } })
 vim.cmd("colorscheme carbonfox")
 
 require("neodev").setup()
 local lspconfig = require('lspconfig')
 lspconfig.lua_ls.setup({
-	settings = {
-		Lua = {
-			completion = {
-				callSnippet = "Replace"
-			}
-		}
-	}
+	settings = { Lua = { completion = { callSnippet = "Replace" } } }
 })
 
 require("nvim-treesitter.configs").setup {
@@ -53,7 +50,24 @@ require("nvim-treesitter.configs").setup {
 }
 
 vim.lsp.enable({ "lua_ls", "rust_analyzer", "clangd", "pyright" })
-vim.lsp.inlay_hint.enable(true)
+
+local function on_attach(client, bufnr)
+	-- Inlay hints (available since Neovim 0.10+)
+	if vim.lsp.inlay_hint then
+		vim.lsp.inlay_hint.enable(bufnr, true)
+	end
+
+	-- Your keymaps
+	local map = function(mode, lhs, rhs)
+		vim.keymap.set(mode, lhs, rhs, { noremap = true, silent = true, buffer = bufnr })
+	end
+
+	map('n', 'gd', vim.lsp.buf.definition)
+	map('n', 'K', vim.lsp.buf.hover)
+	map('n', '<leader>F', vim.lsp.buf.format)
+end
+
+vim.keymap.set('n', 'grd', vim.lsp.buf.definition)
 
 vim.diagnostic.config({
 	virtual_lines = false,
@@ -82,3 +96,11 @@ vim.diagnostic.config({
 require("blink.cmp").setup({
 	fuzzy = { implementation = "lua", }
 })
+
+local gitsigns = require('gitsigns')
+vim.keymap.set('n', '<leader>gb', gitsigns.blame)
+vim.keymap.set('n', '<leader>gx', gitsigns.diffthis)
+
+local fff = require('fff')
+fff.setup({ prompt = "  " })
+vim.keymap.set('n', '<leader>f', fff.find_files)
