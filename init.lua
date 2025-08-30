@@ -19,6 +19,7 @@ vim.keymap.set('n', '<leader>', '<Nop>', { silent = true, noremap = true })
 vim.keymap.set('n', '<leader>w', ':w<CR>')
 vim.keymap.set('n', '<leader>W', ':wa<CR>:qa<CR>')
 vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)
+vim.keymap.set('n', '<leader>r', ':make<CR>')
 
 vim.pack.add({
 	{ src = "https://github.com/tpope/vim-sleuth.git" },
@@ -110,6 +111,7 @@ vim.keymap.set('n', '<leader>gD', gitsigns.diffthis)
 require("telescope").setup { defaults = { layout_config = { width = 0.91, } } }
 require("telescope").load_extension("ui-select")
 local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader> ', builtin.buffers, { desc = 'Telescope opened buffers' })
 vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = 'Telescope find files' })
 vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = 'Telescope live grep' })
 vim.keymap.set('n', '<leader>sb', builtin.buffers, { desc = 'Telescope buffers' })
@@ -140,12 +142,5 @@ vim.keymap.set('n', '<leader>cc', ':CodeCompanionChat<CR>', { desc = 'Open CodeC
 
 require("typst-preview").setup {}
 vim.keymap.set('n', '<leader>vt', ':TypstPreview<CR>', { desc = 'View typst preview' })
-
-vim.keymap.set('n', '<leader>rr', function()
-	if not floatterm:is_open() then
-		floatterm:toggle()
-	end
-	floatterm:send("cargo run\n")
-end, { desc = 'Run cargo run in floating terminal' })
 
 require('lualine').setup {}
