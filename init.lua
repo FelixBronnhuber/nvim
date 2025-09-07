@@ -6,6 +6,7 @@ vim.opt.swapfile = false
 vim.tabstop = 4
 vim.opt.winborder = "rounded"
 vim.g.havenerdfont = true
+vim.opt.scrolloff = 8
 
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
@@ -38,6 +39,7 @@ vim.pack.add({
 	{ src = "https://github.com/chomosuke/typst-preview.nvim.git" },
 	{ src = "https://github.com/echasnovski/mini.icons.git" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim.git" },
+	{ src = "https://github.com/shortcuts/no-neck-pain.nvim.git" },
 })
 
 require("toggleterm").setup { float_opts = { border = 'curved' } }
@@ -48,7 +50,7 @@ vim.keymap.set({ 'n', 't' }, '<A-i>', function()
 	floatterm:toggle()
 end, { desc = 'Toggle floating terminal' })
 
-require("vague").setup { transparent = false, style = { strings = "none" }, }
+require("vague").setup { transparent = true, style = { strings = "none" }, }
 vim.cmd("colorscheme vague")
 
 require("neodev").setup()
@@ -144,3 +146,5 @@ require("typst-preview").setup {}
 vim.keymap.set('n', '<leader>vt', ':TypstPreview<CR>', { desc = 'View typst preview' })
 
 require('lualine').setup {}
+
+require("no-neck-pain").setup { width = 120, mappings = { enabled = true } }
