@@ -22,6 +22,7 @@ vim.keymap.set('n', '<leader>w', ':w<CR>')
 vim.keymap.set('n', '<leader>W', ':wa<CR>:qa<CR>')
 vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)
 vim.keymap.set('n', '<leader>r', ':make<CR>')
+vim.keymap.set('n', '<leader>x', ':bd<CR>')
 
 vim.pack.add({
 	{ src = "https://github.com/tpope/vim-sleuth.git" },
@@ -150,7 +151,9 @@ vim.keymap.set('n', '<leader>cc', ':CodeCompanionChat<CR>', { desc = 'Open CodeC
 require("typst-preview").setup {}
 vim.keymap.set('n', '<leader>vt', ':TypstPreview<CR>', { desc = 'View typst preview' })
 
-require('lualine').setup {}
+require('lualine').setup {
+	options = { section_separators = {left = '', right = '' }, component_separators = '' }
+}
 
 require("no-neck-pain").setup { width = 120, mappings = { enabled = true } }
 
