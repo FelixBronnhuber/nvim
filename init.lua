@@ -7,6 +7,7 @@ vim.tabstop = 4
 vim.opt.winborder = "rounded"
 vim.g.havenerdfont = true
 vim.opt.scrolloff = 8
+vim.opt.termguicolors = true
 
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
@@ -42,6 +43,7 @@ vim.pack.add({
 	{ src = "https://github.com/shortcuts/no-neck-pain.nvim.git" },
 	{ src = "https://github.com/folke/snacks.nvim.git" },
 	{ src = "https://github.com/j-hui/fidget.nvim.git" },
+	{ src = "https://github.com/akinsho/bufferline.nvim.git" },
 })
 
 require("toggleterm").setup { float_opts = { border = 'curved' } }
@@ -171,5 +173,14 @@ require("fidget").setup {
 			winblend = 0,
 			border = "rounded"
 		}
+	}
+}
+
+local bufferline = require("bufferline")
+bufferline.setup {
+	options = {
+		indicator = { style = 'none' },
+		separator_style = { '', '' },
+		show_buffer_close_icons = false,
 	}
 }
