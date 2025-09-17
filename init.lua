@@ -40,6 +40,8 @@ vim.pack.add({
 	{ src = "https://github.com/echasnovski/mini.icons.git" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim.git" },
 	{ src = "https://github.com/shortcuts/no-neck-pain.nvim.git" },
+	{ src = "https://github.com/folke/snacks.nvim.git" },
+	{ src = "https://github.com/j-hui/fidget.nvim.git" },
 })
 
 require("toggleterm").setup { float_opts = { border = 'curved' } }
@@ -117,6 +119,7 @@ vim.keymap.set('n', '<leader> ', builtin.buffers, { desc = 'Telescope opened buf
 vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = 'Telescope find files' })
 vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = 'Telescope live grep' })
 vim.keymap.set('n', '<leader>sb', builtin.buffers, { desc = 'Telescope buffers' })
+vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = 'Telescope keymap' })
 vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = 'Telescope help tags' })
 vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = 'Telescope git branches' })
 vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = 'Telescope git stashes' })
@@ -148,3 +151,25 @@ vim.keymap.set('n', '<leader>vt', ':TypstPreview<CR>', { desc = 'View typst prev
 require('lualine').setup {}
 
 require("no-neck-pain").setup { width = 120, mappings = { enabled = true } }
+
+require("snacks").setup {
+	indent = {
+		enabled = true,
+		indent = {
+			priority = 1,
+			enabled = true,
+			char = '┊',
+			hl = 'SnacksIndent',
+		},
+	},
+}
+
+require("fidget").setup {
+	notification = {
+		override_vim_notify = true,
+		window = {
+			winblend = 0,
+			border = "rounded"
+		}
+	}
+}
