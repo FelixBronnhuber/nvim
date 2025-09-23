@@ -83,15 +83,15 @@ lspconfig.lua_ls.setup({
 })
 
 require("nvim-treesitter.configs").setup {
-	ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "markdown", "rust", "python", "typst" },
+	ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "markdown", "rust", "python", "typst", "javascript" },
 	modules = {},
 	sync_install = false,
-	auto_install = false,
+	auto_install = true,
 	ignore_install = {},
 	highlight = { enable = true, additional_vim_regex_highlighting = false },
 }
 
-local servers = { "lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist" }
+local servers = { "lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist", "ts_ls", "ntt" }
 require("mason").setup { ensure_installed = servers }
 for _, lsp in ipairs(servers) do
 	lspconfig[lsp].setup {
@@ -222,3 +222,6 @@ bufferline.setup {
 	}
 }
 vim.keymap.set('n', '<leader>M', ':Fidget history<CR>')
+
+-- Init private work plugins:
+require("private")
