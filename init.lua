@@ -62,18 +62,20 @@ vim.keymap.set({ 'n', 't' }, '<A-i>', function()
 end, { desc = 'Toggle floating terminal' })
 
 require("vague").setup { transparent = true, style = { strings = "none" }, }
-vim.cmd("colorscheme vague")
+vim.cmd("colorscheme rose-pine-dawn")
 require("rose-pine").setup { variant = 'dawn' }
 
 -- Toggle between 'rose-pine-dawn' and 'vague' colorschemes
 vim.api.nvim_set_keymap('n', '<Space>tt', [[:lua ToggleTheme()<CR>]], { noremap = true, silent = true })
+local current = true
 function ToggleTheme()
-	local current = vim.g.colors_name
-	if current == 'rose-pine' then
-		vim.cmd('colorscheme vague')
+	-- local current = vim.g.colors_name
+	if current then
+		vim.cmd('colorscheme rose-pine-moon')
 	else
-		vim.cmd('colorscheme rose-pine')
+		vim.cmd('colorscheme rose-pine-dawn')
 	end
+	current = not current
 end
 
 require("neodev").setup()
@@ -83,7 +85,7 @@ lspconfig.lua_ls.setup({
 })
 
 require("nvim-treesitter.configs").setup {
-	ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "markdown", "rust", "python", "typst", "javascript" },
+	ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "markdown", "rust", "python", "typst", "javascript", "java", "latex" },
 	modules = {},
 	sync_install = false,
 	auto_install = true,
@@ -91,7 +93,7 @@ require("nvim-treesitter.configs").setup {
 	highlight = { enable = true, additional_vim_regex_highlighting = false },
 }
 
-local servers = { "lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist", "ts_ls", "ntt" }
+local servers = { "lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist", "ts_ls", "ntt", "jdtls", "texlab" }
 require("mason").setup { ensure_installed = servers }
 for _, lsp in ipairs(servers) do
 	lspconfig[lsp].setup {
