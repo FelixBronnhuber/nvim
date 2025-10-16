@@ -51,6 +51,8 @@ vim.pack.add({
 	{ src = "https://github.com/folke/snacks.nvim.git" },
 	{ src = "https://github.com/j-hui/fidget.nvim.git" },
 	{ src = "https://github.com/akinsho/bufferline.nvim.git" },
+	{ src = "https://github.com/let-def/texpresso.vim.git" },
+	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim.git" },
 })
 
 require("toggleterm").setup { float_opts = { border = 'curved' } }
@@ -226,3 +228,12 @@ vim.keymap.set('n', '<leader>M', ':Fidget history<CR>')
 
 -- Init private work plugins:
 require("private")
+
+-- TODO: Change to ENV variable, since location can differ from machine to machine
+local texpresso_env = os.getenv("TEXPRESSO") or ""
+if texpresso_env ~= "" then
+	require("texpresso").texpresso_path = texpresso_env
+end
+-- ""
+
+require("render-markdown").setup {}
