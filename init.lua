@@ -62,20 +62,19 @@ vim.keymap.set({ 'n', 't' }, '<A-i>', function()
 end, { desc = 'Toggle floating terminal' })
 
 require("vague").setup { transparent = true, style = { strings = "none" }, }
-vim.cmd("colorscheme rose-pine-dawn")
+vim.cmd("colorscheme vague")
 require("rose-pine").setup { variant = 'dawn' }
 
--- Toggle between 'rose-pine-dawn' and 'vague' colorschemes
+-- Toggle between light and dark colorschemes
 vim.api.nvim_set_keymap('n', '<Space>tt', [[:lua ToggleTheme()<CR>]], { noremap = true, silent = true })
-local current = true
+local is_dark_theme = true
 function ToggleTheme()
-	-- local current = vim.g.colors_name
-	if current then
-		vim.cmd('colorscheme rose-pine-moon')
+	is_dark_theme = not is_dark_theme
+	if is_dark_theme then
+		vim.cmd('colorscheme vague')
 	else
 		vim.cmd('colorscheme rose-pine-dawn')
 	end
-	current = not current
 end
 
 require("neodev").setup()
