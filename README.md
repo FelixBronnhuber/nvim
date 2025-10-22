@@ -27,6 +27,7 @@ Requires: **nvim >= 0.11** (uses `vim.pack`)
 - **[bufferline.nvim](https://github.com/akinsho/bufferline.nvim):** Buffer/tab management
 - **[texpresso.nvim](https://github.com/let-def/texpresso.vim)**: TeXpresso integration for LaTeX live preview
 - **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim):** Markdown rendering
+- **[mini-diff](https://github.com/nvim-mini/mini.diff.git):** Better git diff view
 
 ## System Dependencies
 

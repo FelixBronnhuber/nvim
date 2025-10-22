@@ -53,6 +53,7 @@ vim.pack.add({
 	{ src = "https://github.com/akinsho/bufferline.nvim.git" },
 	{ src = "https://github.com/let-def/texpresso.vim.git" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim.git" },
+	{ src = "https://github.com/nvim-mini/mini.diff.git" },
 })
 
 require("toggleterm").setup { float_opts = { border = 'curved' } }
@@ -94,7 +95,7 @@ require("nvim-treesitter.configs").setup {
 	highlight = { enable = true, additional_vim_regex_highlighting = false },
 }
 
-local servers = { "lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist", "ts_ls", "ntt", "jdtls", "texlab" }
+local servers = { "lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist", "ts_ls", "ntt", "jdtls", "texlab", "harper-ls" }
 require("mason").setup { ensure_installed = servers }
 for _, lsp in ipairs(servers) do
 	lspconfig[lsp].setup {
@@ -143,8 +144,11 @@ require("blink.cmp").setup {
 }
 
 local gitsigns = require('gitsigns')
+gitsigns.setup {}
 vim.keymap.set('n', '<leader>gB', gitsigns.blame)
-vim.keymap.set('n', '<leader>gD', gitsigns.diffthis)
+
+require('mini.diff').setup {}
+vim.keymap.set('n', '<leader>gd', MiniDiff.toggle_overlay)
 
 require("telescope").setup { defaults = { layout_config = { width = 0.91, } } }
 require("telescope").load_extension("ui-select")
@@ -197,6 +201,9 @@ require("snacks").setup {
 			hl = 'SnacksIndent',
 		},
 	},
+	image = {
+		enabled = true,
+	}
 }
 
 require("fidget").setup {
@@ -229,11 +236,9 @@ vim.keymap.set('n', '<leader>M', ':Fidget history<CR>')
 -- Init private work plugins:
 require("private")
 
--- TODO: Change to ENV variable, since location can differ from machine to machine
 local texpresso_env = os.getenv("TEXPRESSO") or ""
 if texpresso_env ~= "" then
 	require("texpresso").texpresso_path = texpresso_env
 end
--- ""
 
 require("render-markdown").setup {}
