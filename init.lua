@@ -32,7 +32,6 @@ end, { desc = 'Yank entire buffer to clipboard with message' })
 vim.pack.add({
 	{ src = "https://github.com/tpope/vim-sleuth.git" },
 	{ src = "https://github.com/neovim/nvim-lspconfig.git" },
-	{ src = "https://github.com/folke/neodev.nvim.git" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter.git" },
 	{ src = "https://github.com/vague2k/vague.nvim.git" },
 	{ src = "https://github.com/rose-pine/neovim.git" },
@@ -54,6 +53,8 @@ vim.pack.add({
 	{ src = "https://github.com/let-def/texpresso.vim.git" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim.git" },
 	{ src = "https://github.com/nvim-mini/mini.diff.git" },
+	{ src = "https://github.com/mason-org/mason-lspconfig.nvim.git" },
+	{ src = "https://github.com/folke/lazydev.nvim.git" },
 })
 
 require("toggleterm").setup { float_opts = { border = 'curved' } }
@@ -80,14 +81,11 @@ function ToggleTheme()
 	end
 end
 
-require("neodev").setup()
-local lspconfig = require('lspconfig')
-lspconfig.lua_ls.setup({
-	settings = { Lua = { completion = { callSnippet = "Replace" } } },
-})
-
 require("nvim-treesitter.configs").setup {
-	ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "markdown", "rust", "python", "typst", "javascript", "java", "latex" },
+	ensure_installed = {
+		"c", "cpp", "lua", "vim", "vimdoc", "markdown", "rust", "python", "typst", "javascript",
+		"java", "latex", "wgsl"
+	},
 	modules = {},
 	sync_install = false,
 	auto_install = true,
@@ -95,13 +93,17 @@ require("nvim-treesitter.configs").setup {
 	highlight = { enable = true, additional_vim_regex_highlighting = false },
 }
 
-local servers = { "lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist", "ts_ls", "ntt", "jdtls", "texlab", "harper-ls" }
-require("mason").setup { ensure_installed = servers }
-for _, lsp in ipairs(servers) do
-	lspconfig[lsp].setup {
-		capabilities = vim.lsp.protocol.make_client_capabilities(),
-	}
-end
+local servers = {
+	"lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist", "ts_ls", "jdtls", "texlab",
+	"harper_ls", "wgsl_analyzer"
+}
+require("mason").setup {}
+require("mason-lspconfig").setup {
+	ensure_installed = servers,
+	automatic_installation = true,
+}
+
+require("lazydev").setup {}
 
 local icons = {
 	ERROR = '󰅚 ',

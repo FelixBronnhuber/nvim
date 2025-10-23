@@ -6,7 +6,6 @@ Requires: **nvim >= 0.11** (uses `vim.pack`)
 
 - **[vim-sleuth](https://github.com/tpope/vim-sleuth):** Automatic indentation detection
 - **[nvim-lspconfig](https://github.com/neovim/nvim-lspconfig):** Language Server Protocol (LSP) support
-- **[neodev.nvim](https://github.com/folke/neodev.nvim):** Lua development enhancements
 - **[nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter):** Syntax highlighting and parsing
 - **[vague.nvim](https://github.com/vague2k/vague.nvim):** Colorscheme
 - **[rose-pine/neovim](https://github.com/rose-pine/neovim):** Colorscheme
@@ -18,6 +17,7 @@ Requires: **nvim >= 0.11** (uses `vim.pack`)
 - **[plenary.nvim](https://github.com/nvim-lua/plenary.nvim):** Utility functions
 - **[codecompanion.nvim](https://github.com/olimorris/codecompanion.nvim):** For GitHub Copilot Chat
 - **[mason.nvim](https://github.com/mason-org/mason.nvim):** LSP/DAP installer
+- **[mason-lspconfig.nvim](https://github.com/mason-org/mason.nvim):** Bridge between `mason` and `lspconfig` plugin
 - **[typst-preview.nvim](https://github.com/chomosuke/typst-preview.nvim):** Typst live preview
 - **[mini.icons](https://github.com/echasnovski/mini.icons):** Icon support
 - **[lualine.nvim](https://github.com/nvim-lualine/lualine.nvim):** Statusline
@@ -28,6 +28,7 @@ Requires: **nvim >= 0.11** (uses `vim.pack`)
 - **[texpresso.nvim](https://github.com/let-def/texpresso.vim)**: TeXpresso integration for LaTeX live preview
 - **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim):** Markdown rendering
 - **[mini-diff](https://github.com/nvim-mini/mini.diff.git):** Better git diff view
+- **[lazydev.nvim](https://github.com/folke/lazydev.nvim.git):** Neovim Lua config includes
 
 ## System Dependencies
 
