@@ -23,8 +23,9 @@ vim.keymap.set('n', '<leader>W', ':wa<CR>:qa<CR>')
 vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)
 vim.keymap.set('n', '<leader>r', ':make<CR>')
 vim.keymap.set('n', '<leader>x', ':bd<CR>')
-vim.keymap.set('n', '<leader>y', '"+y')
-vim.keymap.set('n', '<leader>ya', function()
+vim.keymap.set('n', '<leader>y', '"+yy', { silent = true, noremap = true })
+vim.keymap.set('v', '<leader>y', '"+y', { silent = true, noremap = true })
+vim.keymap.set('n', '<leader>Y', function()
 	vim.cmd('normal! ggVG"+y')
 	vim.notify('Yanked buffer to clipboard', vim.log.levels.INFO)
 end, { desc = 'Yank entire buffer to clipboard with message' })
@@ -66,8 +67,8 @@ vim.keymap.set({ 'n', 't' }, '<A-i>', function()
 end, { desc = 'Toggle floating terminal' })
 
 require("vague").setup { transparent = true, style = { strings = "none" }, }
-vim.cmd("colorscheme vague")
-require("rose-pine").setup { variant = 'dawn' }
+vim.cmd("colorscheme rose-pine-main")
+require("rose-pine").setup { variant = 'main' }
 
 -- Toggle between light and dark colorschemes
 vim.api.nvim_set_keymap('n', '<Space>tt', [[:lua ToggleTheme()<CR>]], { noremap = true, silent = true })
@@ -75,7 +76,7 @@ local is_dark_theme = true
 function ToggleTheme()
 	is_dark_theme = not is_dark_theme
 	if is_dark_theme then
-		vim.cmd('colorscheme vague')
+		vim.cmd('colorscheme rose-pine-main')
 	else
 		vim.cmd('colorscheme rose-pine-dawn')
 	end
@@ -205,6 +206,11 @@ require("snacks").setup {
 	},
 	image = {
 		enabled = true,
+		formats = { "mermaid" },
+		doc = {
+			enabled = true,
+			inline = false,
+		}
 	}
 }
 
