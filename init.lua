@@ -15,34 +15,36 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-vim.g.mapleader = " "
-vim.keymap.set('n', '<leader>', '<Nop>', { silent = true, noremap = true })
-vim.keymap.set('n', '<leader>w', ':w<CR>')
-vim.keymap.set('n', '<leader>W', ':wa<CR>:qa<CR>')
-vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)
-vim.keymap.set('n', '<leader>r', ':make<CR>')
-vim.keymap.set('n', '<leader>x', ':bd<CR>')
-vim.keymap.set('n', '<leader>y', '"+yy', { silent = true, noremap = true })
-vim.keymap.set('v', '<leader>y', '"+y', { silent = true, noremap = true })
+vim.g.mapleader = " " -- Leader '<space>'
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
+vim.keymap.set('n', '<leader>', '<Nop>', { silent = true, noremap = true, desc = 'Disable bare <leader>' })
+vim.keymap.set('n', '<leader>w', ':w<CR>', { desc = 'Save current buffer' })
+vim.keymap.set('n', '<leader>W', ':wa<CR>:qa<CR>', { desc = 'Save all and quit' })
+vim.keymap.set('n', '<leader>f', vim.lsp.buf.format, { desc = 'Format buffer with LSP' })
+vim.keymap.set('n', '<leader>r', ':make<CR>', { desc = 'Run :make command' })
+vim.keymap.set('n', '<leader>x', ':bd<CR>', { desc = 'Close current buffer' })
+vim.keymap.set('n', '<leader>y', '"+yy', { silent = true, noremap = true, desc = 'Yank line to clipboard' })
+vim.keymap.set('v', '<leader>y', '"+y', { silent = true, noremap = true, desc = 'Yank selection to clipboard' })
 vim.keymap.set('n', '<leader>Y', function()
 	vim.cmd('normal! ggVG"+y')
 	vim.notify('Yanked buffer to clipboard', vim.log.levels.INFO)
-end, { desc = 'Yank entire buffer to clipboard with message' })
+end, { desc = 'Yank entire buffer to clipboard' })
 
 vim.pack.add({
 	{ src = "https://github.com/tpope/vim-sleuth.git" },
 	{ src = "https://github.com/neovim/nvim-lspconfig.git" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter.git" },
 	{ src = "https://github.com/vague2k/vague.nvim.git" },
-	{ src = "https://github.com/rose-pine/neovim.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
 	{ src = "https://github.com/lewis6991/gitsigns.nvim.git" },
 	{ src = "https://github.com/nvim-telescope/telescope.nvim.git" },
 	{ src = "https://github.com/nvim-telescope/telescope-ui-select.nvim.git" },
 	{ src = "https://github.com/akinsho/toggleterm.nvim.git" },
 	{ src = "https://github.com/nvim-lua/plenary.nvim.git" },
+	-- TODO: Switch to "https://github.com/folke/sidekick.nvim.git"
 	{ src = "https://github.com/olimorris/codecompanion.nvim.git" },
+	{ src = "https://github.com/ravitemer/codecompanion-history.nvim.git" },
+	-- ***
 	{ src = "https://github.com/mason-org/mason.nvim.git" },
 	{ src = "https://github.com/chomosuke/typst-preview.nvim.git" },
 	{ src = "https://github.com/echasnovski/mini.icons.git" },
@@ -56,7 +58,14 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-mini/mini.diff.git" },
 	{ src = "https://github.com/mason-org/mason-lspconfig.nvim.git" },
 	{ src = "https://github.com/folke/lazydev.nvim.git" },
+	{ src = "https://github.com/folke/which-key.nvim.git" },
+	-- { src = "https://github.com/rachartier/tiny-inline-diagnostic.nvim.git" },
+	{ src = "https://github.com/hat0uma/csvview.nvim.git" }
 })
+
+vim.keymap.set('n', '<leader>U', function()
+	vim.pack.update()
+end, { desc = 'Update pack (:w to apply)' })
 
 require("toggleterm").setup { float_opts = { border = 'curved' } }
 
@@ -66,21 +75,19 @@ vim.keymap.set({ 'n', 't' }, '<A-i>', function()
 	floatterm:toggle()
 end, { desc = 'Toggle floating terminal' })
 
-require("vague").setup { transparent = true, style = { strings = "none" }, }
-vim.cmd("colorscheme rose-pine-main")
-require("rose-pine").setup { variant = 'main' }
+require("vague").setup { transparent = true, style = { strings = "none" }, inverse = { visual = true } }
 
--- Toggle between light and dark colorschemes
-vim.api.nvim_set_keymap('n', '<Space>tt', [[:lua ToggleTheme()<CR>]], { noremap = true, silent = true })
 local is_dark_theme = true
-function ToggleTheme()
-	is_dark_theme = not is_dark_theme
+vim.cmd("colorscheme vague")
+vim.keymap.set('n', 'tt', function()
 	if is_dark_theme then
-		vim.cmd('colorscheme rose-pine-main')
+		vim.o.background='light'
+		vim.cmd("colorscheme default")
 	else
-		vim.cmd('colorscheme rose-pine-dawn')
+		vim.cmd("colorscheme vague")
 	end
-end
+	is_dark_theme = not is_dark_theme;
+end, { desc = "Toggle between light and dark theme" })
 
 require("nvim-treesitter.configs").setup {
 	ensure_installed = {
@@ -96,7 +103,7 @@ require("nvim-treesitter.configs").setup {
 
 local servers = {
 	"lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist", "ts_ls", "jdtls", "texlab",
-	"harper_ls", "wgsl_analyzer"
+	"wgsl_analyzer"
 }
 require("mason").setup {}
 require("mason-lspconfig").setup {
@@ -114,11 +121,12 @@ local icons = {
 	DEBUG = ' ',
 	NOTIFICATION = ' ',
 	DONE = ' ',
+	FERRIS = ' ',
 }
 
 vim.diagnostic.config({
 	virtual_lines = false,
-	virtual_text = true,
+	virtual_text = true, -- Now handled by tiny-inline-diagnostics
 	underline = true,
 	update_in_insert = false,
 	severity_sort = true,
@@ -148,10 +156,10 @@ require("blink.cmp").setup {
 
 local gitsigns = require('gitsigns')
 gitsigns.setup {}
-vim.keymap.set('n', '<leader>gB', gitsigns.blame)
+vim.keymap.set('n', '<leader>gB', gitsigns.blame, { desc = 'Toggle git blame' })
 
 require('mini.diff').setup {}
-vim.keymap.set('n', '<leader>gd', MiniDiff.toggle_overlay)
+vim.keymap.set('n', '<leader>gd', MiniDiff.toggle_overlay, { desc = 'Toggle git diff overlay' })
 
 require("telescope").setup { defaults = { layout_config = { width = 0.91, } } }
 require("telescope").load_extension("ui-select")
@@ -182,7 +190,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 	end
 })
 
-require("codecompanion").setup {}
+require("codecompanion").setup { extensions = { history = { enabled = true } } }
 vim.keymap.set('n', '<leader>cp', ':CodeCompanion<CR>', { desc = 'Open CodeCompanion' })
 vim.keymap.set('n', '<leader>cc', ':CodeCompanionChat<CR>', { desc = 'Open CodeCompanion Chat' })
 
@@ -239,7 +247,7 @@ bufferline.setup {
 		show_buffer_close_icons = false,
 	}
 }
-vim.keymap.set('n', '<leader>M', ':Fidget history<CR>')
+vim.keymap.set('n', '<leader>M', ':Fidget history<CR>', { desc = 'Show fidget message history' })
 
 -- Init private work plugins:
 require("private")
@@ -250,3 +258,7 @@ if texpresso_env ~= "" then
 end
 
 require("render-markdown").setup {}
+
+require("which-key").setup { delay = 500 }
+
+require("csvview").setup {}
