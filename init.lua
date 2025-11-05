@@ -212,14 +212,6 @@ require("snacks").setup {
 			hl = 'SnacksIndent',
 		},
 	},
-	image = {
-		enabled = true,
-		formats = { "mermaid" },
-		doc = {
-			enabled = true,
-			inline = false,
-		}
-	}
 }
 
 require("fidget").setup {
