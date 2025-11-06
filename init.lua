@@ -34,7 +34,7 @@ vim.pack.add({
 	{ src = "https://github.com/tpope/vim-sleuth.git" },
 	{ src = "https://github.com/neovim/nvim-lspconfig.git" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter.git" },
-	{ src = "https://github.com/vague2k/vague.nvim.git" },
+	{ src = "https://github.com/projekt0n/github-nvim-theme.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
 	{ src = "https://github.com/lewis6991/gitsigns.nvim.git" },
 	{ src = "https://github.com/nvim-telescope/telescope.nvim.git" },
@@ -75,16 +75,15 @@ vim.keymap.set({ 'n', 't' }, '<A-i>', function()
 	floatterm:toggle()
 end, { desc = 'Toggle floating terminal' })
 
-require("vague").setup { transparent = true, style = { strings = "none" }, inverse = { visual = true } }
+require("github-theme").setup {}
 
 local is_dark_theme = true
-vim.cmd("colorscheme vague")
+vim.cmd("colorscheme github_dark_default")
 vim.keymap.set('n', 'tt', function()
 	if is_dark_theme then
-		vim.o.background='light'
-		vim.cmd("colorscheme default")
+		vim.cmd("colorscheme github_dark_default")
 	else
-		vim.cmd("colorscheme vague")
+		vim.cmd("colorscheme github_light")
 	end
 	is_dark_theme = not is_dark_theme;
 end, { desc = "Toggle between light and dark theme" })
