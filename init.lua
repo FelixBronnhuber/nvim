@@ -46,6 +46,7 @@ vim.pack.add({
 	{ src = "https://github.com/ravitemer/codecompanion-history.nvim.git" },
 	-- ***
 	{ src = "https://github.com/mason-org/mason.nvim.git" },
+	{ src = "https://github.com/mason-org/mason-lspconfig.nvim.git" },
 	{ src = "https://github.com/chomosuke/typst-preview.nvim.git" },
 	{ src = "https://github.com/echasnovski/mini.icons.git" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim.git" },
@@ -56,11 +57,11 @@ vim.pack.add({
 	{ src = "https://github.com/let-def/texpresso.vim.git" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim.git" },
 	{ src = "https://github.com/nvim-mini/mini.diff.git" },
-	{ src = "https://github.com/mason-org/mason-lspconfig.nvim.git" },
 	{ src = "https://github.com/folke/lazydev.nvim.git" },
 	{ src = "https://github.com/folke/which-key.nvim.git" },
-	-- { src = "https://github.com/rachartier/tiny-inline-diagnostic.nvim.git" },
-	{ src = "https://github.com/hat0uma/csvview.nvim.git" }
+	{ src = "https://github.com/hat0uma/csvview.nvim.git" },
+	{ src = "https://github.com/tpope/vim-fugitive.git" },
+	{ src = "https://github.com/rbong/vim-flog.git" },
 })
 
 vim.keymap.set('n', '<leader>U', function()
@@ -75,7 +76,7 @@ vim.keymap.set({ 'n', 't' }, '<A-i>', function()
 	floatterm:toggle()
 end, { desc = 'Toggle floating terminal' })
 
-require("github-theme").setup {}
+require("github-theme").setup { options = { styles = { comments = 'italic' } } }
 
 local is_dark_theme = true
 vim.cmd("colorscheme github_dark_default")
@@ -201,7 +202,8 @@ require('lualine').setup {
 
 require("no-neck-pain").setup { width = 120, mappings = { enabled = true } }
 
-require("snacks").setup {
+local snacks = require("snacks")
+snacks.setup {
 	indent = {
 		enabled = true,
 		indent = {
@@ -211,7 +213,13 @@ require("snacks").setup {
 			hl = 'SnacksIndent',
 		},
 	},
+	explorer = {
+		enabled = true,
+		replace_netrw = true,
+		trash = true,
+	}
 }
+vim.keymap.set('n', '<A-\\>', function() snacks.explorer() end, { desc = 'Snacks explorer' })
 
 require("fidget").setup {
 	notification = {
@@ -234,7 +242,8 @@ local bufferline = require("bufferline")
 bufferline.setup {
 	options = {
 		indicator = { style = 'none' },
-		separator_style = { '│', '│' },
+		-- separator_style = { '│', '│' },
+		separator_style = { '', '' },
 		show_buffer_close_icons = false,
 	}
 }

@@ -1,14 +1,14 @@
 # My personal NVIM Config
 
-Requires: **nvim >= 0.11** (uses `vim.pack`)
+> [!INFO] Requires
+> **nvim >= 0.12** (uses `vim.pack`)
 
 ## Plugins
 
 - **[vim-sleuth](https://github.com/tpope/vim-sleuth):** Automatic indentation detection
 - **[nvim-lspconfig](https://github.com/neovim/nvim-lspconfig):** Language Server Protocol (LSP) support
 - **[nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter):** Syntax highlighting and parsing
-- **[vague.nvim](https://github.com/vague2k/vague.nvim):** Colorscheme
-- **[rose-pine/neovim](https://github.com/rose-pine/neovim):** Colorscheme
+- **[github-nvim-theme](https://github.com/projekt0n/github-nvim-theme.git):** Colorscheme (light & dark)
 - **[blink.cmp](https://github.com/Saghen/blink.cmp):** Completion engine
 - **[gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim):** Git integration
 - **[telescope.nvim](https://github.com/nvim-telescope/telescope.nvim):** Fuzzy finder
@@ -16,6 +16,7 @@ Requires: **nvim >= 0.11** (uses `vim.pack`)
 - **[toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim):** Integrated terminal
 - **[plenary.nvim](https://github.com/nvim-lua/plenary.nvim):** Utility functions
 - **[codecompanion.nvim](https://github.com/olimorris/codecompanion.nvim):** For GitHub Copilot Chat
+- **[codecompanion-history](https://github.com/ravitemer/codecompanion-history.nvim.git):** Persistant chat history for Copilot Chat
 - **[mason.nvim](https://github.com/mason-org/mason.nvim):** LSP/DAP installer
 - **[mason-lspconfig.nvim](https://github.com/mason-org/mason.nvim):** Bridge between `mason` and `lspconfig` plugin
 - **[typst-preview.nvim](https://github.com/chomosuke/typst-preview.nvim):** Typst live preview
@@ -29,6 +30,10 @@ Requires: **nvim >= 0.11** (uses `vim.pack`)
 - **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim):** Markdown rendering
 - **[mini-diff](https://github.com/nvim-mini/mini.diff.git):** Better git diff view
 - **[lazydev.nvim](https://github.com/folke/lazydev.nvim.git):** Neovim Lua config includes
+- **[which-key.nvim](https://github.com/folke/which-key.nvim.git):** Keymap preview
+- **[csview.nvim]("https://github.com/hat0uma/csvview.nvim.git"):** CSV viewer
+- **[vim-fugitive]("https://github.com/tpope/vim-fugitive.git"):** Git Tools (Dependency of `vim-flog`)
+- **[vim-flog]("https://github.com/rbong/vim-flog.git"):** Git Branch Viewer
 
 ## System Dependencies
 
