@@ -78,10 +78,10 @@ end, { desc = 'Toggle floating terminal' })
 
 require("github-theme").setup { options = { styles = { comments = 'italic' } } }
 
-local is_dark_theme = true
-vim.cmd("colorscheme github_dark_default")
+local is_dark_theme = false
+vim.cmd("colorscheme github_light")
 vim.keymap.set('n', 'tt', function()
-	if is_dark_theme then
+	if not is_dark_theme then
 		vim.cmd("colorscheme github_dark_default")
 	else
 		vim.cmd("colorscheme github_light")
