@@ -54,7 +54,9 @@ vim.pack.add({
 	{ src = "https://github.com/folke/snacks.nvim.git" },
 	{ src = "https://github.com/j-hui/fidget.nvim.git" },
 	{ src = "https://github.com/akinsho/bufferline.nvim.git" },
-	{ src = "https://github.com/let-def/texpresso.vim.git" },
+	-- { src = "https://github.com/let-def/texpresso.vim.git" },
+	-- { src = "https://github.com/emakman/neovim-latex-previewer.git" },
+	{ src = "https://github.com/FelixBronnhuber/neovim-latex-previewer.git" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim.git" },
 	{ src = "https://github.com/nvim-mini/mini.diff.git" },
 	{ src = "https://github.com/folke/lazydev.nvim.git" },
@@ -252,13 +254,25 @@ vim.keymap.set('n', '<leader>M', ':Fidget history<CR>', { desc = 'Show fidget me
 -- Init private work plugins:
 require("private")
 
-local texpresso_env = os.getenv("TEXPRESSO") or ""
-if texpresso_env ~= "" then
-	require("texpresso").texpresso_path = texpresso_env
-end
+-- local texpresso_env = os.getenv("TEXPRESSO") or ""
+-- if texpresso_env ~= "" then
+-- 	require("texpresso").texpresso_path = texpresso_env
+-- end
 
 require("render-markdown").setup {}
 
 require("which-key").setup { delay = 500 }
 
 require("csvview").setup {}
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+	pattern = "*.csv",
+	command = "CsvViewEnable",
+})
+vim.api.nvim_create_user_command("LogHours", function()
+	local file = os.getenv("NVIM_WORKHOURS_FILE")
+	if file and file ~= "" then
+		vim.cmd("edit " .. file)
+	else
+		vim.notify("NVIM_WORKHOURS_FILE is not set", vim.log.levels.ERROR)
+	end
+end, { desc = "Open work hours CSV file" })
