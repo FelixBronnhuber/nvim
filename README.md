@@ -1,7 +1,9 @@
 # My personal NVIM Config
 
-> [!INFO] Requires
-> **nvim >= 0.12** (uses `vim.pack`)
+> [!IMPORTANT]
+> Requires: **nvim >= 0.12** (uses `vim.pack`)
+> 
+> Install: `sudo snap install nvim --edge --classic`
 
 ## Plugins
 
