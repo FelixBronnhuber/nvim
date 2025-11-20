@@ -230,7 +230,12 @@ end, { noremap = true, desc = 'Toggle Sidekick (Agent)' })
 require("typst-preview").setup {}
 vim.keymap.set('n', '<leader>vt', ':TypstPreview<CR>', { desc = 'View typst preview' })
 require('lualine').setup {
-	options = { section_separators = '', component_separators = '│' }
+	options = {
+		section_separators = '', component_separators = '│',
+	},
+	sections = {
+		lualine_c = { { 'filename', path = 1 } }, -- path = 1: relative path
+	}
 }
 
 require("no-neck-pain").setup { width = 120, mappings = { enabled = true } }
