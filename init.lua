@@ -36,15 +36,15 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter.git" },
 	{ src = "https://github.com/projekt0n/github-nvim-theme.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
+	{ src = "https://github.com/giuxtaposition/blink-cmp-copilot.git" },
 	{ src = "https://github.com/lewis6991/gitsigns.nvim.git" },
 	{ src = "https://github.com/nvim-telescope/telescope.nvim.git" },
 	{ src = "https://github.com/nvim-telescope/telescope-ui-select.nvim.git" },
 	{ src = "https://github.com/akinsho/toggleterm.nvim.git" },
 	{ src = "https://github.com/nvim-lua/plenary.nvim.git" },
-	-- TODO: Switch to "https://github.com/folke/sidekick.nvim.git"
+	{ src = "https://github.com/folke/sidekick.nvim.git" },
 	{ src = "https://github.com/olimorris/codecompanion.nvim.git" },
 	{ src = "https://github.com/ravitemer/codecompanion-history.nvim.git" },
-	-- ***
 	{ src = "https://github.com/mason-org/mason.nvim.git" },
 	{ src = "https://github.com/mason-org/mason-lspconfig.nvim.git" },
 	{ src = "https://github.com/chomosuke/typst-preview.nvim.git" },
@@ -54,9 +54,7 @@ vim.pack.add({
 	{ src = "https://github.com/folke/snacks.nvim.git" },
 	{ src = "https://github.com/j-hui/fidget.nvim.git" },
 	{ src = "https://github.com/akinsho/bufferline.nvim.git" },
-	-- { src = "https://github.com/let-def/texpresso.vim.git" },
-	-- { src = "https://github.com/emakman/neovim-latex-previewer.git" },
-	{ src = "https://github.com/FelixBronnhuber/neovim-latex-previewer.git" },
+	{ src = "https://github.com/lervag/vimtex.git" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim.git" },
 	{ src = "https://github.com/nvim-mini/mini.diff.git" },
 	{ src = "https://github.com/folke/lazydev.nvim.git" },
@@ -126,9 +124,11 @@ local icons = {
 	FERRIS = ' ',
 }
 
+local is_diagnostic_virtual_lines_enabled = false
+local is_diagnostic_virtual_text_enabled = true
 vim.diagnostic.config({
-	virtual_lines = false,
-	virtual_text = true, -- Now handled by tiny-inline-diagnostics
+	virtual_lines = is_diagnostic_virtual_lines_enabled,
+	virtual_text = is_diagnostic_virtual_text_enabled,
 	underline = true,
 	update_in_insert = false,
 	severity_sort = true,
@@ -146,6 +146,19 @@ vim.diagnostic.config({
 		},
 	},
 })
+vim.keymap.set('n', '<leader>vd', function()
+	is_diagnostic_virtual_lines_enabled = not is_diagnostic_virtual_lines_enabled
+	is_diagnostic_virtual_text_enabled = not is_diagnostic_virtual_text_enabled
+	vim.diagnostic.config({
+		virtual_lines = is_diagnostic_virtual_lines_enabled,
+		virtual_text = is_diagnostic_virtual_text_enabled,
+	})
+	vim.notify(
+		"Diagnostics: virtual_lines=" .. tostring(is_diagnostic_virtual_lines_enabled) ..
+		", virtual_text=" .. tostring(is_diagnostic_virtual_text_enabled),
+		vim.log.levels.INFO
+	)
+end, { desc = 'Toggle virtual-lines/text diagnostics' })
 
 require("blink.cmp").setup {
 	sources = { default = { 'lsp', 'path' }, },
@@ -153,7 +166,7 @@ require("blink.cmp").setup {
 		menu = { draw = { treesitter = { "lsp" } }, },
 		documentation = { auto_show = true, treesitter_highlighting = true, },
 	},
-	signature = { enabled = true, }
+	signature = { enabled = true, },
 }
 
 local gitsigns = require('gitsigns')
@@ -193,8 +206,26 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 require("codecompanion").setup { extensions = { history = { enabled = true } } }
-vim.keymap.set('n', '<leader>cp', ':CodeCompanion<CR>', { desc = 'Open CodeCompanion' })
-vim.keymap.set('n', '<leader>cc', ':CodeCompanionChat<CR>', { desc = 'Open CodeCompanion Chat' })
+vim.keymap.set(
+	'n', '<leader>co',
+	':CodeCompanionChat<CR>',
+	{ noremap = true, desc = 'CodeCompanionChat Open' }
+)
+vim.keymap.set(
+	'n', '<leader>ch',
+	':CodeCompanionHistory<CR>',
+	{ noremap = true, desc = 'CodeCompanionChat Open' }
+)
+
+require("sidekick").setup {
+	nes = { enabled = false },
+	cli = { win = { layout = "right" } },
+}
+local sidekick_cli = require('sidekick.cli')
+vim.keymap.set({ 'n', 't' }, '<A-c>', function()
+	sidekick_cli.toggle()
+	vim.cmd('stopinsert')
+end, { noremap = true, desc = 'Toggle Sidekick (Agent)' })
 
 require("typst-preview").setup {}
 vim.keymap.set('n', '<leader>vt', ':TypstPreview<CR>', { desc = 'View typst preview' })
@@ -244,20 +275,17 @@ local bufferline = require("bufferline")
 bufferline.setup {
 	options = {
 		indicator = { style = 'none' },
-		-- separator_style = { '│', '│' },
 		separator_style = { '', '' },
 		show_buffer_close_icons = false,
 	}
 }
 vim.keymap.set('n', '<leader>M', ':Fidget history<CR>', { desc = 'Show fidget message history' })
 
--- Init private work plugins:
-require("private")
-
--- local texpresso_env = os.getenv("TEXPRESSO") or ""
--- if texpresso_env ~= "" then
--- 	require("texpresso").texpresso_path = texpresso_env
--- end
+-- Configure VimTex
+vim.cmd("filetype plugin indent on")
+vim.g.vimtex_view_method = 'zathura'
+vim.g.vimtex_quickfix_open_on_warning = 0
+vim.g.vimtex_view_zathura_use_synctex = 0
 
 require("render-markdown").setup {}
 
@@ -276,3 +304,6 @@ vim.api.nvim_create_user_command("LogHours", function()
 		vim.notify("NVIM_WORKHOURS_FILE is not set", vim.log.levels.ERROR)
 	end
 end, { desc = "Open work hours CSV file" })
+
+-- Init private work plugins:
+require("private")

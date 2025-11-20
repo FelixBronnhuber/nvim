@@ -8,32 +8,34 @@
 - **[vim-sleuth](https://github.com/tpope/vim-sleuth):** Automatic indentation detection
 - **[nvim-lspconfig](https://github.com/neovim/nvim-lspconfig):** Language Server Protocol (LSP) support
 - **[nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter):** Syntax highlighting and parsing
-- **[github-nvim-theme](https://github.com/projekt0n/github-nvim-theme.git):** Colorscheme (light & dark)
+- **[github-nvim-theme](https://github.com/projekt0n/github-nvim-theme):** Colorscheme (light & dark)
 - **[blink.cmp](https://github.com/Saghen/blink.cmp):** Completion engine
+- **[blink-cmp-copilot](https://github.com/giuxtaposition/blink-cmp-copilot):** GitHub Copilot source for blink.cmp
 - **[gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim):** Git integration
 - **[telescope.nvim](https://github.com/nvim-telescope/telescope.nvim):** Fuzzy finder
 - **[telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim):** Telescope UI enhancements
 - **[toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim):** Integrated terminal
 - **[plenary.nvim](https://github.com/nvim-lua/plenary.nvim):** Utility functions
-- **[codecompanion.nvim](https://github.com/olimorris/codecompanion.nvim):** For GitHub Copilot Chat
-- **[codecompanion-history](https://github.com/ravitemer/codecompanion-history.nvim.git):** Persistant chat history for Copilot Chat
+- **[sidekick.nvim](https://github.com/folke/sidekick.nvim):** GitHub Copilot CLI integration
+- **[codecompanion.nvim](https://github.com/olimorris/codecompanion.nvim):** GitHub Copilot Chat
+- **[codecompanion-history.nvim](https://github.com/ravitemer/codecompanion-history.nvim):** Persistent chat history for Copilot Chat
 - **[mason.nvim](https://github.com/mason-org/mason.nvim):** LSP/DAP installer
-- **[mason-lspconfig.nvim](https://github.com/mason-org/mason.nvim):** Bridge between `mason` and `lspconfig` plugin
+- **[mason-lspconfig.nvim](https://github.com/mason-org/mason-lspconfig.nvim):** Bridge between Mason and lspconfig
 - **[typst-preview.nvim](https://github.com/chomosuke/typst-preview.nvim):** Typst live preview
 - **[mini.icons](https://github.com/echasnovski/mini.icons):** Icon support
 - **[lualine.nvim](https://github.com/nvim-lualine/lualine.nvim):** Statusline
 - **[no-neck-pain.nvim](https://github.com/shortcuts/no-neck-pain.nvim):** Centers the current buffer
-- **[snacks.nvim](https://github.com/folke/snacks.nvim):** Indentation guides
-- **[fidget.nvim](https://github.com/j-hui/fidget.nvim):** LSP notifications
+- **[snacks.nvim](https://github.com/folke/snacks.nvim):** Indentation guides and file explorer
+- **[fidget.nvim](https://github.com/j-hui/fidget.nvim):** LSP progress and notifications
 - **[bufferline.nvim](https://github.com/akinsho/bufferline.nvim):** Buffer/tab management
-- **[texpresso.nvim](https://github.com/let-def/texpresso.vim)**: TeXpresso integration for LaTeX live preview
+- **[vimtex](https://github.com/lervag/vimtex):** LaTeX integration with Zathura viewer
 - **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim):** Markdown rendering
-- **[mini-diff](https://github.com/nvim-mini/mini.diff.git):** Better git diff view
-- **[lazydev.nvim](https://github.com/folke/lazydev.nvim.git):** Neovim Lua config includes
-- **[which-key.nvim](https://github.com/folke/which-key.nvim.git):** Keymap preview
-- **[csview.nvim]("https://github.com/hat0uma/csvview.nvim.git"):** CSV viewer
-- **[vim-fugitive]("https://github.com/tpope/vim-fugitive.git"):** Git Tools (Dependency of `vim-flog`)
-- **[vim-flog]("https://github.com/rbong/vim-flog.git"):** Git Branch Viewer
+- **[mini.diff](https://github.com/nvim-mini/mini.diff):** Better git diff view
+- **[lazydev.nvim](https://github.com/folke/lazydev.nvim):** Neovim Lua config includes
+- **[which-key.nvim](https://github.com/folke/which-key.nvim):** Keymap preview
+- **[csvview.nvim](https://github.com/hat0uma/csvview.nvim):** CSV viewer
+- **[vim-fugitive](https://github.com/tpope/vim-fugitive):** Git tools (dependency of vim-flog)
+- **[vim-flog](https://github.com/rbong/vim-flog):** Git branch viewer
 
 ## System Dependencies
 
@@ -42,7 +44,7 @@ Some plugins require additional tools to be installed on your system:
 > [!CAUTION]
 > This list is likely incomplete!
 
-- **rust-toolchain:** For dependencies and rust LSP
+- **rust-toolchain:** For dependencies and Rust LSP (rust-analyzer)
 - **tree-sitter-cli:** Required for some Treesitter grammars (e.g., LaTeX)
   - Install: `cargo install tree-sitter-cli`
 - **ripgrep:** Used by Telescope for fast searching
@@ -50,11 +52,11 @@ Some plugins require additional tools to be installed on your system:
 - **fd:** Used by Telescope for file finding
   - Install: `brew install fd`
 - **typst:** Required for Typst preview
-  - `brew install typst`
-- **Node.js:** Required for some LSP servers managed by Mason
+  - Install: `brew install typst`
+- **Node.js:** Required for some LSP servers managed by Mason (e.g., ts_ls)
   - Install: `brew install node`
-- **TeXpresso (optional):** For Typst/LaTeX workflows
-  - [Install instructions](https://github.com/let-def/texpresso/blob/main/INSTALL.md)
-  - Set the environment variable `TEXPRESSO` to the path of the `texpresso` executable!
-    - `export TEXPRESSO="path/to/bin/texpresso"`
+- **Zathura:** PDF viewer for VimTeX
+  - Install: `brew install zathura zathura-pdf-poppler`
+- **GitHub Copilot CLI:** For Sidekick integration
+  - Install: `gh extension install github/gh-copilot`
 
