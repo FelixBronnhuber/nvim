@@ -291,6 +291,8 @@ vim.cmd("filetype plugin indent on")
 vim.g.vimtex_view_method = 'zathura'
 vim.g.vimtex_quickfix_open_on_warning = 0
 vim.g.vimtex_view_zathura_use_synctex = 0
+vim.g.maplocalleader = vim.g.mapleader;
+vim.g.vimtex_leader = vim.g.mapleader;
 
 require("render-markdown").setup {}
 
