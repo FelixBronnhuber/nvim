@@ -79,8 +79,7 @@ end, { desc = 'Toggle floating terminal' })
 local github_theme = require("github-theme")
 
 local is_dark_theme = false
-vim.cmd("colorscheme github_light")
-vim.keymap.set('n', 'tt', function()
+function toggle_theme()
 	if not is_dark_theme then
 		github_theme.setup {
 			options = {
@@ -99,7 +98,9 @@ vim.keymap.set('n', 'tt', function()
 		vim.cmd("colorscheme github_light")
 	end
 	is_dark_theme = not is_dark_theme;
-end, { desc = "Toggle between light and dark theme" })
+end
+toggle_theme()
+vim.keymap.set('n', 'tt', toggle_theme, { desc = "Toggle between light and dark theme" })
 
 require("nvim-treesitter.configs").setup {
 	ensure_installed = {
@@ -115,7 +116,7 @@ require("nvim-treesitter.configs").setup {
 
 local servers = {
 	"lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist", "ts_ls", "jdtls", "texlab",
-	"wgsl_analyzer", "mdformat"
+	"wgsl_analyzer"
 }
 require("mason").setup {}
 require("mason-lspconfig").setup {
@@ -300,7 +301,15 @@ vim.keymap.set('n', '<leader>M', ':Fidget history<CR>', { desc = 'Show fidget me
 
 -- Configure VimTex
 vim.cmd("filetype plugin indent on")
-vim.g.vimtex_view_method = 'zathura'
+
+if vim.fn.has('wsl') == 1 then
+  vim.g.vimtex_view_method = 'general'
+  vim.g.vimtex_view_general_viewer = '/mnt/c/Program Files/SumatraPDF/SumatraPDF.exe'
+  vim.g.vimtex_view_general_options = '-reuse-instance -forward-search @tex @line @pdf'
+else
+  vim.g.vimtex_view_method = 'zathura'
+end
+
 vim.g.vimtex_quickfix_open_on_warning = 0
 vim.g.vimtex_view_zathura_use_synctex = 0
 vim.g.maplocalleader = vim.g.mapleader;
