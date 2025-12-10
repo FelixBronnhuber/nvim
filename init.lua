@@ -62,6 +62,7 @@ vim.pack.add({
 	{ src = "https://github.com/hat0uma/csvview.nvim.git" },
 	{ src = "https://github.com/tpope/vim-fugitive.git" },
 	{ src = "https://github.com/rbong/vim-flog.git" },
+	{ src = "https://github.com/tpope/vim-surround.git" },
 })
 
 vim.keymap.set('n', '<leader>U', function()

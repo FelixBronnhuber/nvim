@@ -38,6 +38,7 @@
 - **[csvview.nvim](https://github.com/hat0uma/csvview.nvim):** CSV viewer
 - **[vim-fugitive](https://github.com/tpope/vim-fugitive):** Git tools (dependency of vim-flog)
 - **[vim-flog](https://github.com/rbong/vim-flog):** Git branch viewer
+- **[vim-surround](https://github.com/tpope/vim-surround.git):** Vim Surround
 
 ## System Dependencies
 
