@@ -134,7 +134,8 @@ local icons = {
 	HINT = '󰌶 ',
 	DEBUG = ' ',
 	NOTIFICATION = ' ',
-	DONE = ' ',
+	checkmark = ' ',
+	x = ' ',
 	FERRIS = ' ',
 }
 
@@ -287,7 +288,7 @@ require("fidget").setup {
 		override_vim_notify = true,
 		window = { winblend = 0, border = "rounded" },
 	},
-	progress = { display = { done_icon = icons.DONE } },
+	progress = { display = { done_icon = icons.checkmark } },
 }
 
 local bufferline = require("bufferline")
@@ -324,11 +325,11 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 vim.keymap.set('n', '<leader>vs', function()
 	if vim.wo.spell then
 		vim.wo.spell = false
-		vim.notify('Disabled spellcheck', vim.log.levels.INFO)
+		vim.notify(icons.x .. ' Disabled spellcheck', vim.log.levels.INFO)
 	else
 		vim.wo.spell = true
 		vim.opt.spelllang = { 'en_us' }
-		vim.notify('Enabled spellcheck', vim.log.levels.INFO)
+		vim.notify(icons.checkmark .. 'Enabled spellcheck', vim.log.levels.INFO)
 	end
 end, { desc = 'Toggle spellcheck' })
 
