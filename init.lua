@@ -316,6 +316,22 @@ vim.g.vimtex_view_zathura_use_synctex = 0
 vim.g.maplocalleader = vim.g.mapleader;
 vim.g.vimtex_leader = vim.g.mapleader;
 
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+	pattern = { '*.tex', '*.typ', '*.md' },
+	command = 'setlocal spell spelllang=en_us'
+})
+
+vim.keymap.set('n', '<leader>vs', function()
+	if vim.wo.spell then
+		vim.wo.spell = false
+		vim.notify('Disabled spellcheck', vim.log.levels.INFO)
+	else
+		vim.wo.spell = true
+		vim.opt.spelllang = { 'en_us' }
+		vim.notify('Enabled spellcheck', vim.log.levels.INFO)
+	end
+end, { desc = 'Toggle spellcheck' })
+
 require("render-markdown").setup {}
 
 require("which-key").setup { delay = 500 }
