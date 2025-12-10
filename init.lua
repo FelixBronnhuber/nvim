@@ -43,7 +43,7 @@ vim.pack.add({
 	{ src = "https://github.com/akinsho/toggleterm.nvim.git" },
 	{ src = "https://github.com/nvim-lua/plenary.nvim.git" },
 	{ src = "https://github.com/folke/sidekick.nvim.git" },
-	{ src = "https://github.com/olimorris/codecompanion.nvim.git", version = "v17.33.0" },
+	{ src = "https://github.com/olimorris/codecompanion.nvim.git",             version = "v17.33.0" },
 	{ src = "https://github.com/ravitemer/codecompanion-history.nvim.git" },
 	{ src = "https://github.com/mason-org/mason.nvim.git" },
 	{ src = "https://github.com/mason-org/mason-lspconfig.nvim.git" },
@@ -99,6 +99,7 @@ function toggle_theme()
 	end
 	is_dark_theme = not is_dark_theme;
 end
+
 toggle_theme()
 vim.keymap.set('n', 'tt', toggle_theme, { desc = "Toggle between light and dark theme" })
 
@@ -303,11 +304,11 @@ vim.keymap.set('n', '<leader>M', ':Fidget history<CR>', { desc = 'Show fidget me
 vim.cmd("filetype plugin indent on")
 
 if vim.fn.has('wsl') == 1 then
-  vim.g.vimtex_view_method = 'general'
-  vim.g.vimtex_view_general_viewer = '/mnt/c/Program Files/SumatraPDF/SumatraPDF.exe'
-  vim.g.vimtex_view_general_options = '-reuse-instance -forward-search @tex @line @pdf'
+	vim.g.vimtex_view_method = 'general'
+	vim.g.vimtex_view_general_viewer = '/mnt/c/Program Files/SumatraPDF/SumatraPDF.exe'
+	vim.g.vimtex_view_general_options = '-reuse-instance -forward-search @tex @line @pdf'
 else
-  vim.g.vimtex_view_method = 'zathura'
+	vim.g.vimtex_view_method = 'zathura'
 end
 
 vim.g.vimtex_quickfix_open_on_warning = 0
