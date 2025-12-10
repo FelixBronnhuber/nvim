@@ -208,6 +208,7 @@ vim.keymap.set('n', '<leader>gk', builtin.keymaps, { desc = 'Telescope key maps'
 vim.keymap.set('n', '<leader>q', function()
 	builtin.diagnostics({ wrap_results = true, line_width = "full" })
 end, { desc = 'Telescope dianostics' })
+vim.keymap.set('n', 'z=', builtin.spell_suggest, { noremap = true, desc = 'Telescope spell suggest' })
 
 vim.api.nvim_create_autocmd('LspAttach', {
 	callback = function(_)
