@@ -79,7 +79,7 @@ end, { desc = 'Toggle floating terminal' })
 local github_theme = require("github-theme")
 
 local is_dark_theme = false
-function toggle_theme()
+local function toggle_theme()
 	if not is_dark_theme then
 		github_theme.setup {
 			options = {
