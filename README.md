@@ -39,6 +39,7 @@
 - **[vim-fugitive](https://github.com/tpope/vim-fugitive):** Git tools (dependency of vim-flog)
 - **[vim-flog](https://github.com/rbong/vim-flog):** Git branch viewer
 - **[vim-surround](https://github.com/tpope/vim-surround.git):** Vim Surround
+- **[nvim-quicktype](https://github.com/midoBB/nvim-quicktype.git):** Nvim QuickType
 
 ## System Dependencies
 
@@ -62,4 +63,6 @@ Some plugins require additional tools to be installed on your system:
   - Install: `brew install zathura zathura-pdf-poppler`
 - **GitHub Copilot CLI:** For Sidekick integration
   - Install: `gh extension install github/gh-copilot`
+- **QuickType:** For nvim-quicktype
+  - Install: `npm install -g quicktype`
 
