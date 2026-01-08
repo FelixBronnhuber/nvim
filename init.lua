@@ -35,6 +35,7 @@ vim.pack.add({
 	{ src = "https://github.com/neovim/nvim-lspconfig.git" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter.git" },
 	{ src = "https://github.com/projekt0n/github-nvim-theme.git" },
+	{ src = "https://github.com/vague-theme/vague.nvim.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
 	{ src = "https://github.com/giuxtaposition/blink-cmp-copilot.git" },
 	{ src = "https://github.com/lewis6991/gitsigns.nvim.git" },
@@ -43,7 +44,7 @@ vim.pack.add({
 	{ src = "https://github.com/akinsho/toggleterm.nvim.git" },
 	{ src = "https://github.com/nvim-lua/plenary.nvim.git" },
 	{ src = "https://github.com/folke/sidekick.nvim.git" },
-	{ src = "https://github.com/olimorris/codecompanion.nvim.git",             version = "v17.33.0" },
+	{ src = "https://github.com/olimorris/codecompanion.nvim.git" },
 	{ src = "https://github.com/ravitemer/codecompanion-history.nvim.git" },
 	{ src = "https://github.com/mason-org/mason.nvim.git" },
 	{ src = "https://github.com/mason-org/mason-lspconfig.nvim.git" },
@@ -83,21 +84,28 @@ local github_theme = require("github-theme")
 local is_dark_theme = false
 local function toggle_theme()
 	if not is_dark_theme then
-		github_theme.setup {
-			options = {
-				transparent = true,
-				styles = { comments = 'italic' }
-			}
+		-- github_theme.setup {
+		-- 	options = {
+		-- 		transparent = true,
+		-- 		styles = { comments = 'italic' }
+		-- 	}
+		-- }
+		-- vim.cmd("colorscheme github_dark_default")
+		vim.o.background = "dark"
+		require("vague").setup {
+			transparent = true
 		}
-		vim.cmd("colorscheme github_dark_default")
+		vim.cmd("colorscheme vague")
 	else
-		github_theme.setup {
-			options = {
-				transparent = false,
-				styles = { comments = 'italic' }
-			}
-		}
-		vim.cmd("colorscheme github_light")
+		-- github_theme.setup {
+		-- 	options = {
+		-- 		transparent = false,
+		-- 		styles = { comments = 'italic' }
+		-- 	}
+		-- }
+		-- vim.cmd("colorscheme github_light")
+		vim.o.background = "light"
+		vim.cmd("colorscheme default")
 	end
 	is_dark_theme = not is_dark_theme;
 end
@@ -223,7 +231,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
 	end
 })
 
-require("codecompanion").setup { extensions = { history = { enabled = true } } }
+require("codecompanion").setup {
+	-- extensions = { history = { enabled = true } }
+}
 vim.keymap.set(
 	'n', '<leader>co',
 	':CodeCompanionChat<CR>',
@@ -338,7 +348,10 @@ end, { desc = 'Toggle spellcheck' })
 
 require("render-markdown").setup {}
 
-require("which-key").setup { delay = 500 }
+require("which-key").setup {
+	delay = 500,
+	win = { border = "rounded" }
+}
 
 require("csvview").setup {}
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
