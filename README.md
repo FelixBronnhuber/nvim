@@ -40,6 +40,8 @@
 - **[vim-flog](https://github.com/rbong/vim-flog):** Git branch viewer
 - **[vim-surround](https://github.com/tpope/vim-surround.git):** Vim Surround
 - **[nvim-quicktype](https://github.com/midoBB/nvim-quicktype.git):** Nvim QuickType
+- **[nui](https://github.com/MunifTanjim/nui.nvim.git):** UI Library (dependency of codediff)
+- **[codediff](https://github.com/esmuellert/codediff.nvim.git):**  codediff (diff tool)
 
 ## System Dependencies
 

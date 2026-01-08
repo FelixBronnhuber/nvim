@@ -65,6 +65,8 @@ vim.pack.add({
 	{ src = "https://github.com/rbong/vim-flog.git" },
 	{ src = "https://github.com/tpope/vim-surround.git" },
 	{ src = "https://github.com/midoBB/nvim-quicktype.git" },
+	{ src = "https://github.com/MunifTanjim/nui.nvim.git" },
+	{ src = "https://github.com/esmuellert/codediff.nvim.git" },
 })
 
 vim.keymap.set('n', '<leader>U', function()
@@ -200,6 +202,9 @@ vim.keymap.set('n', '<leader>gB', gitsigns.blame, { desc = 'Toggle git blame' })
 
 require('mini.diff').setup {}
 vim.keymap.set('n', '<leader>gd', MiniDiff.toggle_overlay, { desc = 'Toggle git diff overlay' })
+
+-- Codediff alternative
+vim.keymap.set('n', '<leader>gD', ':CodeDiff<CR>', { desc = 'Toggle git diff overlay' })
 
 require("telescope").setup { defaults = { layout_config = { width = 0.91, } } }
 require("telescope").load_extension("ui-select")
