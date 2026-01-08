@@ -7,6 +7,12 @@
 
 ## Plugins
 
+- **[vague.nvim](https://github.com/vague-theme/vague.nvim.git):** Colorscheme
+- **[nvim-nio](https://github.com/nvim-neotest/nvim-nio.git):** Async IO for Neovim (DAP dependency)
+- **[mason-nvim-dap.nvim](https://github.com/jay-babu/mason-nvim-dap.nvim.git):** Bridge between Mason and nvim-dap
+- **[nvim-dap](https://github.com/mfussenegger/nvim-dap.git):** Debug Adapter Protocol (DAP) client
+- **[nvim-dap-ui](https://github.com/rcarriga/nvim-dap-ui.git):** UI for nvim-dap
+- **[nvim-dap-virtual-text](https://github.com/theHamsta/nvim-dap-virtual-text.git):** Virtual text support for nvim-dap
 - **[vim-sleuth](https://github.com/tpope/vim-sleuth):** Automatic indentation detection
 - **[nvim-lspconfig](https://github.com/neovim/nvim-lspconfig):** Language Server Protocol (LSP) support
 - **[nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter):** Syntax highlighting and parsing

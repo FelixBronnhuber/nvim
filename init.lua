@@ -48,6 +48,11 @@ vim.pack.add({
 	{ src = "https://github.com/ravitemer/codecompanion-history.nvim.git" },
 	{ src = "https://github.com/mason-org/mason.nvim.git" },
 	{ src = "https://github.com/mason-org/mason-lspconfig.nvim.git" },
+	{ src = "https://github.com/nvim-neotest/nvim-nio.git" },
+	{ src = "https://github.com/jay-babu/mason-nvim-dap.nvim.git" },
+	{ src = "https://github.com/mfussenegger/nvim-dap.git" },
+	{ src = "https://github.com/rcarriga/nvim-dap-ui.git" },
+	{ src = "https://github.com/theHamsta/nvim-dap-virtual-text.git" },
 	{ src = "https://github.com/chomosuke/typst-preview.nvim.git" },
 	{ src = "https://github.com/echasnovski/mini.icons.git" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim.git" },
@@ -136,6 +141,85 @@ require("mason-lspconfig").setup {
 	ensure_installed = servers,
 	automatic_installation = true,
 }
+require("mason-nvim-dap").setup {
+	ensure_installed = { "codelldb", "debugpy" },
+	automatic_installation = true,
+}
+local dap = require("dap")
+
+dap.adapters.codelldb = {
+	type = 'server',
+	port = "${port}",
+	executable = {
+		-- Mason installs codelldb here:
+		command = vim.fn.stdpath("data") .. "/mason/bin/codelldb",
+		args = { "--port", "${port}" },
+	}
+}
+dap.configurations.cpp = {
+	{
+		name = "Launch file",
+		type = "codelldb",
+		request = "launch",
+		program = function()
+			return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+		end,
+		cwd = '${workspaceFolder}',
+		stopOnEntry = false,
+	},
+}
+dap.configurations.c = dap.configurations.cpp
+dap.configurations.rust = dap.configurations.cpp
+
+require("nvim-dap-virtual-text").setup {}
+
+local dapui = require('dapui')
+dapui.setup()
+vim.keymap.set('n', '<A-d>', function()
+	dapui.toggle()
+end, { desc = "Toggle Debug UI" })
+vim.keymap.set('n', '<leader>dr', function()
+	dap.toggle_breakpoint()
+	dapui.toggle()
+	dap.continue()
+end, { desc = "Debug run to current line" })
+
+vim.keymap.set('n', '<leader>db', function()
+	dap.toggle_breakpoint()
+end, { desc = "Toggle Breakpoint" })
+
+vim.keymap.set('n', '<leader>ds', function()
+	dap.continue()
+end, { desc = "DAP Start" })
+
+vim.keymap.set('n', '<leader>dR', function()
+	dap.restart()
+end, { desc = "DAP Restart" })
+
+vim.keymap.set('n', '<leader>dq', function()
+	dap.stop()
+end, { desc = "DAP Quit / Stop" })
+
+local dap_keymaps = {
+	{ 'n', '<Up>',      dap.step_out,      'DAP Step Out' },
+	{ 'n', '<Down>',    dap.step_into,     'DAP Step Into' },
+	{ 'n', '<Left>',    dap.continue,      'DAP Continue' },
+	{ 'n', '<Right>',   dap.step_over,     'DAP Step Over' },
+	{ 'n', '<S-Right>', dap.run_to_cursor, 'DAP Run to Cursor' },
+}
+local function set_dap_keymaps()
+	for _, map in ipairs(dap_keymaps) do
+		vim.keymap.set(map[1], map[2], map[3], { desc = map[4] })
+	end
+end
+local function unset_dap_keymaps()
+	for _, map in ipairs(dap_keymaps) do
+		pcall(vim.keymap.del, map[1], map[2])
+	end
+end
+dap.listeners.after.event_initialized["dap_keymaps"] = set_dap_keymaps
+dap.listeners.after.event_terminated["dap_keymaps"] = unset_dap_keymaps
+dap.listeners.after.event_exited["dap_keymaps"] = unset_dap_keymaps
 
 require("lazydev").setup {}
 
