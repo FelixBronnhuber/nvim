@@ -34,7 +34,6 @@ vim.pack.add({
 	{ src = "https://github.com/tpope/vim-sleuth.git" },
 	{ src = "https://github.com/neovim/nvim-lspconfig.git" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter.git" },
-	{ src = "https://github.com/projekt0n/github-nvim-theme.git" },
 	{ src = "https://github.com/vague-theme/vague.nvim.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
 	{ src = "https://github.com/giuxtaposition/blink-cmp-copilot.git" },
@@ -62,7 +61,7 @@ vim.pack.add({
 	{ src = "https://github.com/akinsho/bufferline.nvim.git" },
 	{ src = "https://github.com/lervag/vimtex.git" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim.git" },
-	{ src = "https://github.com/nvim-mini/mini.diff.git" },
+	-- { src = "https://github.com/nvim-mini/mini.diff.git" },
 	{ src = "https://github.com/folke/lazydev.nvim.git" },
 	{ src = "https://github.com/folke/which-key.nvim.git" },
 	{ src = "https://github.com/hat0uma/csvview.nvim.git" },
@@ -72,6 +71,10 @@ vim.pack.add({
 	{ src = "https://github.com/midoBB/nvim-quicktype.git" },
 	{ src = "https://github.com/MunifTanjim/nui.nvim.git" },
 	{ src = "https://github.com/esmuellert/codediff.nvim.git" },
+	{ src = "https://github.com/jbyuki/venn.nvim.git" },
+	{ src = "https://github.com/foxoman/vim-helix.git" },
+	{ src = "https://github.com/archie-judd/telescope-words.nvim.git" },
+	{ src = "https://github.com/kungfusheep/mfd.nvim.git" },
 })
 
 vim.keymap.set('n', '<leader>U', function()
@@ -86,31 +89,16 @@ vim.keymap.set({ 'n', 't' }, '<A-i>', function()
 	floatterm:toggle()
 end, { desc = 'Toggle floating terminal' })
 
-local github_theme = require("github-theme")
-
+local vague = require("vague")
 local is_dark_theme = false
 local function toggle_theme()
 	if not is_dark_theme then
-		-- github_theme.setup {
-		-- 	options = {
-		-- 		transparent = true,
-		-- 		styles = { comments = 'italic' }
-		-- 	}
-		-- }
-		-- vim.cmd("colorscheme github_dark_default")
-		vim.o.background = "dark"
-		require("vague").setup {
-			transparent = true
+		vague.setup {
+			transparent = true,
 		}
+		vim.o.background = "dark"
 		vim.cmd("colorscheme vague")
 	else
-		-- github_theme.setup {
-		-- 	options = {
-		-- 		transparent = false,
-		-- 		styles = { comments = 'italic' }
-		-- 	}
-		-- }
-		-- vim.cmd("colorscheme github_light")
 		vim.o.background = "light"
 		vim.cmd("colorscheme default")
 	end
@@ -118,6 +106,9 @@ local function toggle_theme()
 end
 
 toggle_theme()
+-- vim.cmd("colorscheme helix-boo")
+-- vim.api.nvim_set_hl(0, "LspInlayHint", { fg = "#774477", bg = "NONE", italic = true })
+
 vim.keymap.set('n', 'tt', toggle_theme, { desc = "Toggle between light and dark theme" })
 
 require("nvim-treesitter.configs").setup {
@@ -281,17 +272,21 @@ require("blink.cmp").setup {
 }
 
 local gitsigns = require('gitsigns')
-gitsigns.setup {}
+gitsigns.setup {
+	numhl = false,
+	linehl = false,
+}
 vim.keymap.set('n', '<leader>gB', gitsigns.blame, { desc = 'Toggle git blame' })
 
-require('mini.diff').setup {}
-vim.keymap.set('n', '<leader>gd', MiniDiff.toggle_overlay, { desc = 'Toggle git diff overlay' })
+-- require('mini.diff').setup {}
+-- vim.keymap.set('n', '<leader>gd', MiniDiff.toggle_overlay, { desc = 'Toggle git diff overlay' })
 
 -- Codediff alternative
-vim.keymap.set('n', '<leader>gD', ':CodeDiff<CR>', { desc = 'Toggle git diff overlay' })
+-- vim.keymap.set('n', '<leader>gD', ':CodeDiff<CR>', { desc = 'Toggle git diff overlay' })
 
-require("telescope").setup { defaults = { layout_config = { width = 0.91, } } }
-require("telescope").load_extension("ui-select")
+local telescope = require("telescope")
+telescope.setup { defaults = { layout_config = { width = 0.91, } } }
+telescope.load_extension("ui-select")
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader> ', builtin.buffers, { desc = 'Telescope opened buffers' })
 vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = 'Telescope find files' })
@@ -399,6 +394,7 @@ bufferline.setup {
 		indicator = { style = 'none' },
 		separator_style = { '', '' },
 		show_buffer_close_icons = false,
+		always_show_bufferline = false,
 	}
 }
 vim.keymap.set('n', '<leader>M', ':Fidget history<CR>', { desc = 'Show fidget message history' })
@@ -455,6 +451,33 @@ vim.api.nvim_create_user_command("LogHours", function()
 		vim.notify("NVIM_WORKHOURS_FILE is not set", vim.log.levels.ERROR)
 	end
 end, { desc = "Open work hours CSV file" })
+
+-- Umlaute:
+local chars = {
+	a = 'ä',
+	A = 'Ä',
+	o = 'ö',
+	O = 'Ö',
+	u = 'ü',
+	U = 'Ü',
+	s = 'ß'
+}
+for key, val in pairs(chars) do
+	vim.keymap.set('i', '<M-' .. key .. '>', val, { noremap = true, silent = true })
+end
+
+vim.keymap.set(
+	"n",
+	"<Leader>sd",
+	telescope.extensions.telescope_words.search_dictionary,
+	{ desc = "Telescope: search dictionary" }
+)
+vim.keymap.set(
+	"n",
+	"<Leader>st",
+	telescope.extensions.telescope_words.search_thesaurus,
+	{ desc = "Telescope: search thesaurus" }
+)
 
 -- Init private work plugins:
 require("private")
