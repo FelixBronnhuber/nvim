@@ -7,7 +7,7 @@
 
 ## Plugins
 
-- **[vague.nvim](https://github.com/vague-theme/vague.nvim.git):** Colorscheme
+- **[vague.nvim](https://github.com/FelixBronnhuber/vague.nvim.git):** Colorscheme (Fork with light mode)
 - **[nvim-nio](https://github.com/nvim-neotest/nvim-nio.git):** Async IO for Neovim (DAP dependency)
 - **[mason-nvim-dap.nvim](https://github.com/jay-babu/mason-nvim-dap.nvim.git):** Bridge between Mason and nvim-dap
 - **[nvim-dap](https://github.com/mfussenegger/nvim-dap.git):** Debug Adapter Protocol (DAP) client
@@ -48,6 +48,16 @@
 - **[nvim-quicktype](https://github.com/midoBB/nvim-quicktype.git):** Nvim QuickType
 - **[nui](https://github.com/MunifTanjim/nui.nvim.git):** UI Library (dependency of codediff)
 - **[codediff](https://github.com/esmuellert/codediff.nvim.git):**  codediff (diff tool)
+- **[telescope-words.nvim](https://github.com/archie-judd/telescope-words.nvim.git):** Dictionary and thesaurus for Telescope
+- **[tiny-inline-diagnostic.nvim](https://github.com/rachartier/tiny-inline-diagnostic.nvim.git):** Inline diagnostics
+- **[nvim-rg](https://github.com/duane9/nvim-rg.git):** Ripgrep integration
+- **[nvim-neoclip.lua](https://github.com/AckslD/nvim-neoclip.lua.git):** Clipboard history
+- **[nvim-cursorline](https://github.com/ya2s/nvim-cursorline.git):** Smart cursorline
+- **[sqlite.lua](https://github.com/kkharji/sqlite.lua):** SQLite Lua bindings (dependency)
+- **[daily-notes.nvim](https://github.com/fdavies93/daily-notes.nvim.git):** Daily notes management
+- **[oil.nvim](https://github.com/stevearc/oil.nvim.git):** File explorer and buffer editor
+- **[dockyard.nvim](https://github.com/emrearmagan/dockyard.nvim.git):** Session/Project manager
+- **[nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons.git):** Icon support
 
 ## System Dependencies
 
@@ -73,4 +83,8 @@ Some plugins require additional tools to be installed on your system:
   - Install: `gh extension install github/gh-copilot`
 - **QuickType:** For nvim-quicktype
   - Install: `npm install -g quicktype`
+- **sqlite:** Required for sqlite.lua (and neoclip)
+  - Install: `brew install sqlite`
+
+
 
