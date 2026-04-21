@@ -1,13 +1,14 @@
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.signcolumn = "yes"
-vim.opt.wrap = false
-vim.opt.swapfile = false
-vim.tabstop = 8
-vim.opt.winborder = "rounded"
+vim.o.number = true
+vim.o.relativenumber = true
+vim.o.signcolumn = "yes"
+vim.o.wrap = false
+vim.o.swapfile = false
+vim.o.tabstop = 8
+vim.o.winborder = "rounded"
 vim.g.havenerdfont = true
-vim.opt.scrolloff = 8
-vim.opt.termguicolors = true
+vim.o.scrolloff = 8
+vim.o.sidescrolloff = 8
+vim.o.termguicolors = true
 
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
@@ -72,6 +73,7 @@ vim.pack.add({
 		src = "https://github.com/FelixBronnhuber/vague.nvim.git",
 		version = "feat/light-mode"
 	},
+	{ src = "https://github.com/savq/melange-nvim.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
 	{ src = "https://github.com/giuxtaposition/blink-cmp-copilot.git" },
 	{ src = "https://github.com/lewis6991/gitsigns.nvim.git" },
@@ -82,6 +84,7 @@ vim.pack.add({
 	{ src = "https://github.com/folke/sidekick.nvim.git" },
 	{ src = "https://github.com/olimorris/codecompanion.nvim.git" },
 	{ src = "https://github.com/ravitemer/codecompanion-history.nvim.git" },
+	-- { src = "https://github.com/yetone/avante.nvim.git" },
 	{ src = "https://github.com/mason-org/mason.nvim.git" },
 	{ src = "https://github.com/mason-org/mason-lspconfig.nvim.git" },
 	{ src = "https://github.com/nvim-neotest/nvim-nio.git" },
@@ -92,10 +95,9 @@ vim.pack.add({
 	{ src = "https://github.com/chomosuke/typst-preview.nvim.git" },
 	{ src = "https://github.com/echasnovski/mini.icons.git" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim.git" },
-	{ src = "https://github.com/shortcuts/no-neck-pain.nvim.git" },
 	{ src = "https://github.com/folke/snacks.nvim.git" },
 	{ src = "https://github.com/j-hui/fidget.nvim.git" },
-	{ src = "https://github.com/akinsho/bufferline.nvim.git" },
+	{ src = "https://github.com/b0o/incline.nvim.git" },
 	{ src = "https://github.com/lervag/vimtex.git" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim.git" },
 	{ src = "https://github.com/nvim-mini/mini.diff.git" },
@@ -112,12 +114,17 @@ vim.pack.add({
 	{ src = "https://github.com/rachartier/tiny-inline-diagnostic.nvim.git" },
 	{ src = "https://github.com/duane9/nvim-rg.git" },
 	{ src = "https://github.com/AckslD/nvim-neoclip.lua.git" },
-	{ src = "https://github.com/ya2s/nvim-cursorline.git" },
 	{ src = "https://github.com/kkharji/sqlite.lua" },
 	{ src = "https://github.com/fdavies93/daily-notes.nvim.git" },
 	{ src = "https://github.com/stevearc/oil.nvim.git" },
 	{ src = "https://github.com/emrearmagan/dockyard.nvim.git" },
-	{ src = "https://github.com/nvim-tree/nvim-web-devicons.git" },
+	{ src = "https://github.com/archie-judd/blink-cmp-words.git" },
+	{ src = "https://github.com/Sang-it/fluoride.git" },
+	{ src = "https://github.com/jbyuki/venn.nvim.git" },
+	{ src = "https://github.com/erichlf/devcontainer-cli.nvim.git" },
+	{ src = "https://github.com/Aietes/esp32.nvim.git" },
+	{ src = "https://github.com/folke/todo-comments.nvim.git" },
+	{ src = "https://github.com/folke/trouble.nvim.git" },
 })
 
 vim.keymap.set('n', '<leader>U', function()
@@ -152,21 +159,16 @@ vim.keymap.set({ "n", "t" }, "<A-p>", function()
 	end
 end, { desc = "Toggle floating btop-terminal" })
 
+vim.cmd("colorscheme melange")
+-- vim.api.nvim_set_hl(0, "WinBar", { link = "Normal" })
+-- vim.api.nvim_set_hl(0, "WinBarNC", { link = "Normal" })
+
 local is_dark_theme = false
 local function toggle_theme()
 	if not is_dark_theme then
-		require("vague").setup {
-			style = "dark",
-			transparent = true,
-		}
 		vim.o.background = "dark"
-		vim.cmd("colorscheme vague")
 	else
 		vim.o.background = "light"
-		require("vague").setup {
-			style = "light"
-		}
-		vim.cmd("colorscheme vague")
 	end
 	is_dark_theme = not is_dark_theme;
 end
@@ -197,6 +199,7 @@ local servers = {
 	"lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist", "ts_ls", "jdtls", "texlab",
 	"wgsl_analyzer"
 }
+
 require("mason").setup {}
 require("mason-lspconfig").setup {
 	ensure_installed = servers,
@@ -335,7 +338,11 @@ local icons = {
 	FERRIS = ' ',
 }
 
+require('mini.icons').setup()
+MiniIcons.mock_nvim_web_devicons()
+
 vim.diagnostic.config({
+	virtual_text = true,
 	signs = {
 		text = {
 			[vim.diagnostic.severity.ERROR] = icons.ERROR,
@@ -365,24 +372,38 @@ vim.keymap.set("n", "<leader>yd", function()
 	yank_diag_message('+', "Diagnostic copied to clipboard")
 end, { desc = "Yank diagnostic message" })
 
-require("tiny-inline-diagnostic").setup {
-	preset = "classic",
-	options = {
-		add_messages = { display_count = true, },
-		multilines = { enabled = true, },
-		use_icons_from_diagnostic = true,
-	},
-}
+vim.keymap.set('n', 'gK', function()
+	local new_config = not vim.diagnostic.config().underline
+	vim.diagnostic.config({ underline = new_config })
+end, { desc = 'Toggle diagnostic underline' })
+
+vim.keymap.set("n", "<leader>dt", "<cmd>TinyInlineDiag toggle<cr>", { desc = "Toggle diagnostics" })
+
+vim.keymap.set("n", "<leader>Q", vim.diagnostic.setqflist, { desc = "Add buffer diagnostics to quickfix list" })
 
 require("blink.cmp").setup {
 	sources = {
-		default = { 'lsp', 'lazydev', 'path' },
+		default = { 'lsp', 'path' },
+		per_filetype = {
+			markdown = { inherit_defaults = true, "dictionary" },
+			text = { inherit_defaults = true, "dictionary" },
+			typst = { inherit_defaults = true, "dictionary" },
+			latex = { inherit_defaults = true, "dictionary" },
+			lua = { inherit_defaults = true, 'lazydev' },
+		},
 		providers = {
 			lazydev = {
 				name = "LazyDev",
 				module = "lazydev.integrations.blink",
-				-- make lazydev completions top priority (see `:h blink.cmp`)
 				score_offset = 100,
+			},
+			thesaurus = {
+				name = "blink-cmp-words",
+				module = "blink-cmp-words.thesaurus",
+			},
+			dictionary = {
+				name = "blink-cmp-words",
+				module = "blink-cmp-words.dictionary",
 			},
 		},
 	},
@@ -405,19 +426,29 @@ vim.keymap.set('n', '<leader>gd', MiniDiff.toggle_overlay, { desc = 'Toggle git 
 
 vim.keymap.set('n', '<leader>gD', ':CodeDiff<CR>', { desc = 'Toggle git split code diff' })
 
-require 'nvim-web-devicons'.setup {}
-
 local telescope = require("telescope")
+local builtin = require('telescope.builtin')
+local actions = require('telescope.actions')
+
 telescope.setup {
 	defaults = {
 		layout_config = { width = 0.91, },
 		color_devicons = true,
-	}
+	},
 }
+
 telescope.load_extension("ui-select")
-local builtin = require('telescope.builtin')
+telescope.load_extension("todo-comments")
 vim.keymap.set('n', '<leader> ', builtin.buffers, { desc = 'Telescope opened buffers' })
 vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = 'Telescope find files' })
+vim.keymap.set('n', '<leader>sv', function()
+	builtin.find_files({
+		attach_mappings = function(_, _)
+			actions.select_default:replace(actions.select_vertical)
+			return true
+		end,
+	})
+end, { desc = 'Telescope find files (split)' })
 vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = 'Telescope live grep' })
 vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = 'Telescope keymap' })
 vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = 'Telescope help tags' })
@@ -429,6 +460,7 @@ vim.keymap.set('n', '<leader>q', function()
 	builtin.diagnostics({ wrap_results = true, line_width = "full" })
 end, { desc = 'Telescope dianostics' })
 vim.keymap.set('n', 'z=', builtin.spell_suggest, { noremap = true, desc = 'Telescope spell suggest' })
+vim.keymap.set("n", "<leader>st", "<cmd>TodoTelescope<CR>", { desc = "Telescope: search TODO/FIX/NOTE" })
 
 vim.api.nvim_create_autocmd('LspAttach', {
 	callback = function(_)
@@ -443,8 +475,14 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 require("codecompanion").setup {
-	extensions = { history = { enabled = true } }
+	extensions = { history = { enabled = true } },
+	display = {
+		chat = {
+			intro_message = "Blechdepp Chat",
+		},
+	},
 }
+
 vim.keymap.set(
 	'n', '<leader>co',
 	':CodeCompanionChat<CR>',
@@ -468,16 +506,43 @@ end, { noremap = true, desc = 'Toggle Sidekick (Agent)' })
 
 require("typst-preview").setup {}
 vim.keymap.set('n', '<leader>vt', ':TypstPreview<CR>', { desc = 'View typst preview' })
+
+local helpers = require 'incline.helpers'
+local devicons = require 'nvim-web-devicons'
+require('incline').setup {
+	window = {
+		padding = 0,
+		margin = { horizontal = 0 },
+	},
+	render = function(props)
+		-- local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ':t')
+		local fullpath = vim.api.nvim_buf_get_name(props.buf)
+		local root = vim.fs.root(props.buf, { '.git', 'pyproject.toml', 'package.json' }) or vim.fn.getcwd()
+		local filename = vim.fn.fnamemodify(fullpath, ':~:.')
+		if fullpath:find('^' .. vim.pesc(root) .. '/') then
+			filename = fullpath:sub(#root + 2) -- strip "<root>/"
+		end
+		if filename == '' then
+			filename = '[No Name]'
+		end
+		local ft_icon, ft_color = devicons.get_icon_color(filename)
+		local modified = vim.bo[props.buf].modified
+		return {
+			ft_icon and { ' ', ft_icon, ' ', guibg = ft_color, guifg = helpers.contrast_color(ft_color) } or
+			'',
+			' ',
+			{ filename, gui = modified and 'bold,italic' or 'bold' },
+			' ',
+			-- guibg = '#44406e',
+		}
+	end,
+}
+
 require('lualine').setup {
 	options = {
 		section_separators = '', component_separators = '│',
 	},
-	sections = {
-		lualine_c = { { 'filename', path = 1 } }, -- path = 1: relative path
-	}
 }
-
-require("no-neck-pain").setup { width = 120, mappings = { enabled = true } }
 
 local snacks = require("snacks")
 snacks.setup {
@@ -507,10 +572,20 @@ snacks.setup {
 		enabled = true,
 		replace_netrw = true,
 		trash = true,
+		hidden = true,
 	},
 	scroll = { enabled = true },
-	statuscolumn = { enabled = true },
+	zen = {
+		toggles = {
+			dim = false,
+			git_signs = false,
+			mini_diff_signs = false,
+			diagnostics = false,
+		},
+		enabled = true,
+	}
 }
+vim.keymap.set('n', '<leader>z', function() snacks.zen() end, { desc = 'Snacks Zen' })
 
 vim.keymap.set('n', '<A-\\>', function() snacks.explorer() end, { desc = 'Snacks explorer' })
 
@@ -531,15 +606,28 @@ require("fidget").setup {
 	progress = { display = { done_icon = icons.checkmark } },
 }
 
-local bufferline = require("bufferline")
-bufferline.setup {
-	options = {
-		indicator = { style = 'none' },
-		separator_style = { '', '' },
-		show_buffer_close_icons = false,
-		always_show_bufferline = false,
-	}
-}
+-- local bufferline = require("bufferline")
+-- bufferline.setup {
+-- 	options = {
+-- 		-- Show more of the path for duplicate filenames
+-- 		max_name_length = 40,
+-- 		max_prefix_length = 30,
+-- 		truncate_names = false,
+-- 		-- Optionally, always show the parent folder for all files
+-- 		name_formatter = function(buf)
+-- 			local name = buf.name
+-- 			local parent = vim.fn.fnamemodify(buf.path, ":h:t")
+-- 			if parent ~= "." and parent ~= "" then
+-- 				return parent .. "/" .. name
+-- 			end
+-- 			return name
+-- 		end,
+-- 		indicator = { style = 'none' },
+-- 		separator_style = { '┊', '┊' },
+-- 		show_buffer_close_icons = false,
+-- 		always_show_bufferline = false,
+-- 	}
+-- }
 vim.keymap.set('n', '<leader>M', ':Fidget history<CR>', { desc = 'Show fidget message history' })
 
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
@@ -553,7 +641,7 @@ vim.keymap.set('n', '<leader>vs', function()
 		vim.notify(icons.x .. ' Disabled spellcheck', vim.log.levels.INFO)
 	else
 		vim.wo.spell = true
-		vim.opt.spelllang = { 'en_us' }
+		vim.o.spelllang = { 'en_us' }
 		vim.notify(icons.checkmark .. 'Enabled spellcheck', vim.log.levels.INFO)
 	end
 end, { desc = 'Toggle spellcheck' })
@@ -601,7 +689,7 @@ vim.keymap.set(
 )
 vim.keymap.set(
 	"n",
-	"<Leader>st",
+	"<Leader>sD",
 	telescope.extensions.telescope_words.search_thesaurus,
 	{ desc = "Telescope: search thesaurus" }
 )
@@ -616,10 +704,6 @@ vim.keymap.set(
 	telescope.extensions.neoclip.default,
 	{ desc = "Telescope: search yank clipboard (history)" }
 )
-
-require("nvim-cursorline").setup {
-	cursorline = { enable = true, timeout = 0 },
-}
 
 require("daily-notes").setup {}
 vim.keymap.set('n', '<leader>nn', ":DailyNote<CR>", { desc = "New daily Note" })
@@ -649,6 +733,59 @@ vim.keymap.set('n', '<leader>so', ":Oil<CR>", { desc = "Open Oil" })
 
 require("dockyard").setup {}
 vim.keymap.set('n', '<leader>dy', ":DockyardFloat<CR>", { desc = "Open Dock-Yard" })
+
+require("fluoride").setup {
+	window = {
+		border = "rounded",
+	},
+}
+
+-- venn.nvim: enable or disable keymappings
+function _G.Toggle_venn()
+	local venn_enabled = vim.inspect(vim.b.venn_enabled)
+	if venn_enabled == "nil" then
+		vim.b.venn_enabled = true
+		vim.cmd [[setlocal ve=all]]
+		-- draw a line on HJKL keystokes
+		vim.api.nvim_buf_set_keymap(0, "n", "J", "<C-v>j:VBox<CR>", { noremap = true })
+		vim.api.nvim_buf_set_keymap(0, "n", "K", "<C-v>k:VBox<CR>", { noremap = true })
+		vim.api.nvim_buf_set_keymap(0, "n", "L", "<C-v>l:VBox<CR>", { noremap = true })
+		vim.api.nvim_buf_set_keymap(0, "n", "H", "<C-v>h:VBox<CR>", { noremap = true })
+		-- draw a box by pressing "f" with visual selection
+		vim.api.nvim_buf_set_keymap(0, "v", "f", ":VBox<CR>", { noremap = true })
+	else
+		vim.cmd [[setlocal ve=]]
+		vim.api.nvim_buf_del_keymap(0, "n", "J")
+		vim.api.nvim_buf_del_keymap(0, "n", "K")
+		vim.api.nvim_buf_del_keymap(0, "n", "L")
+		vim.api.nvim_buf_del_keymap(0, "n", "H")
+		vim.api.nvim_buf_del_keymap(0, "v", "f")
+		vim.b.venn_enabled = nil
+	end
+end
+
+-- toggle keymappings for venn using <leader>v
+vim.api.nvim_set_keymap('n', '<leader>vn', ":lua Toggle_venn()<CR>", { noremap = true })
+
+require("devcontainer-cli").setup({
+	-- only the most useful options shown; see full config below
+	interactive = false,
+	toplevel = true,
+	remove_existing_container = true,
+	-- dotfiles_repository = "https://github.com/erichlf/dotfiles.git",
+	-- dotfiles_branch = "devcontainer-cli",devcontainercli
+	-- dotfiles_targetPath = "~/dotfiles",
+	-- dotfiles_installCommand = "install.sh",
+	shell = "bash",
+	nvim_binary = "nvim",
+	log_level = "debug",
+	console_level = "info",
+})
+
+require("todo-comments").setup {}
+require("trouble").setup {}
+vim.keymap.set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<CR>", { desc = "Diagnostics (Trouble)" })
+vim.keymap.set("n", "<leader>xq", "<cmd>Trouble qflist toggle<CR>", { desc = "Quickfix (Trouble)" })
 
 -- Init private work plugins:
 require("private")
