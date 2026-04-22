@@ -9,6 +9,7 @@ vim.g.havenerdfont = true
 vim.o.scrolloff = 8
 vim.o.sidescrolloff = 8
 vim.o.termguicolors = true
+vim.o.exrc = true
 
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
@@ -577,7 +578,7 @@ snacks.setup {
 	scroll = { enabled = true },
 	zen = {
 		toggles = {
-			dim = false,
+			dim = true,
 			git_signs = false,
 			mini_diff_signs = false,
 			diagnostics = false,
@@ -784,8 +785,8 @@ require("devcontainer-cli").setup({
 
 require("todo-comments").setup {}
 require("trouble").setup {}
-vim.keymap.set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<CR>", { desc = "Diagnostics (Trouble)" })
-vim.keymap.set("n", "<leader>xq", "<cmd>Trouble qflist toggle<CR>", { desc = "Quickfix (Trouble)" })
+vim.keymap.set("n", "<leader>qq", "<cmd>Trouble diagnostics toggle<CR>", { desc = "Diagnostics (Trouble)" })
+vim.keymap.set("n", "<leader>qx", "<cmd>Trouble qflist toggle<CR>", { desc = "Quickfix (Trouble)" })
 
 -- Init private work plugins:
 require("private")
