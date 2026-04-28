@@ -41,30 +41,6 @@ vim.api.nvim_create_autocmd('PackChanged', {
 	end
 })
 
-vim.api.nvim_create_autocmd('PackChanged', {
-	callback = function(ev)
-		local name, kind = ev.data.spec.name, ev.data.kind
-		if name ~= 'blink.cmp' or (kind ~= 'install' and kind ~= 'update') then return end
-
-		local path = vim.fn.stdpath("data") .. "/site/pack/core/opt/blink.cmp"
-		vim.notify("Building blink.cmp...", vim.log.levels.INFO)
-		vim.system(
-			{ "cargo", "build", "--release" },
-			{ cwd = path },
-			function(result)
-				vim.schedule(function()
-					if result.code == 0 then
-						vim.notify("blink.cmp built successfully", vim.log.levels.INFO)
-					else
-						vim.notify("blink.cmp build failed:\n" .. (result.stderr or ""),
-							vim.log.levels.ERROR)
-					end
-				end)
-			end
-		)
-	end
-})
-
 vim.pack.add({
 	{ src = "https://github.com/tpope/vim-sleuth.git" },
 	{ src = "https://github.com/neovim/nvim-lspconfig.git" },
@@ -76,6 +52,7 @@ vim.pack.add({
 	},
 	{ src = "https://github.com/savq/melange-nvim.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
+	{ src = "https://github.com/Saghen/blink.lib.git" },
 	{ src = "https://github.com/giuxtaposition/blink-cmp-copilot.git" },
 	{ src = "https://github.com/lewis6991/gitsigns.nvim.git" },
 	{ src = "https://github.com/nvim-telescope/telescope.nvim.git" },
@@ -208,7 +185,43 @@ require("mason-lspconfig").setup {
 	automatic_enable = { exclude = servers },
 }
 
-local capabilities = require('blink.cmp').get_lsp_capabilities()
+local blink = require('blink.cmp')
+blink.build():wait(60000)
+blink.setup {
+	sources = {
+		default = { 'lsp', 'path' },
+		per_filetype = {
+			markdown = { inherit_defaults = true, "dictionary" },
+			text = { inherit_defaults = true, "dictionary" },
+			typst = { inherit_defaults = true, "dictionary" },
+			latex = { inherit_defaults = true, "dictionary" },
+			lua = { inherit_defaults = true, 'lazydev' },
+		},
+		providers = {
+			lazydev = {
+				name = "LazyDev",
+				module = "lazydev.integrations.blink",
+				score_offset = 100,
+			},
+			thesaurus = {
+				name = "blink-cmp-words",
+				module = "blink-cmp-words.thesaurus",
+			},
+			dictionary = {
+				name = "blink-cmp-words",
+				module = "blink-cmp-words.dictionary",
+			},
+		},
+	},
+	completion = {
+		menu = { draw = { treesitter = { "lsp" } }, },
+		documentation = { auto_show = true, treesitter_highlighting = true, },
+	},
+	signature = { enabled = true, },
+	fuzzy = { implementation = "prefer_rust_with_warning" },
+}
+
+local capabilities = blink.get_lsp_capabilities()
 
 vim.lsp.config('lua_ls', {
 	capabilities = capabilities,
@@ -381,40 +394,6 @@ end, { desc = 'Toggle diagnostic underline' })
 vim.keymap.set("n", "<leader>dt", "<cmd>TinyInlineDiag toggle<cr>", { desc = "Toggle diagnostics" })
 
 vim.keymap.set("n", "<leader>Q", vim.diagnostic.setqflist, { desc = "Add buffer diagnostics to quickfix list" })
-
-require("blink.cmp").setup {
-	sources = {
-		default = { 'lsp', 'path' },
-		per_filetype = {
-			markdown = { inherit_defaults = true, "dictionary" },
-			text = { inherit_defaults = true, "dictionary" },
-			typst = { inherit_defaults = true, "dictionary" },
-			latex = { inherit_defaults = true, "dictionary" },
-			lua = { inherit_defaults = true, 'lazydev' },
-		},
-		providers = {
-			lazydev = {
-				name = "LazyDev",
-				module = "lazydev.integrations.blink",
-				score_offset = 100,
-			},
-			thesaurus = {
-				name = "blink-cmp-words",
-				module = "blink-cmp-words.thesaurus",
-			},
-			dictionary = {
-				name = "blink-cmp-words",
-				module = "blink-cmp-words.dictionary",
-			},
-		},
-	},
-	completion = {
-		menu = { draw = { treesitter = { "lsp" } }, },
-		documentation = { auto_show = true, treesitter_highlighting = true, },
-	},
-	signature = { enabled = true, },
-	fuzzy = { implementation = "prefer_rust_with_warning" },
-}
 
 local gitsigns = require('gitsigns')
 gitsigns.setup {
