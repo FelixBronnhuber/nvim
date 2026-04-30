@@ -137,16 +137,20 @@ vim.keymap.set({ "n", "t" }, "<A-p>", function()
 	end
 end, { desc = "Toggle floating btop-terminal" })
 
-vim.cmd("colorscheme melange")
--- vim.api.nvim_set_hl(0, "WinBar", { link = "Normal" })
--- vim.api.nvim_set_hl(0, "WinBarNC", { link = "Normal" })
-
 local is_dark_theme = false
 local function toggle_theme()
 	if not is_dark_theme then
 		vim.o.background = "dark"
+		require("vague").setup{
+			transparent = true
+		}
+		vim.cmd("colorscheme vague")
 	else
 		vim.o.background = "light"
+		require("vague").setup{
+			transparent = false
+		}
+		vim.cmd("colorscheme vague")
 	end
 	is_dark_theme = not is_dark_theme;
 end
