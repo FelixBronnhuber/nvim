@@ -51,6 +51,7 @@ vim.pack.add({
 		version = "feat/light-mode"
 	},
 	{ src = "https://github.com/savq/melange-nvim.git" },
+	{ src = "https://github.com/AvengeMedia/base46.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
 	{ src = "https://github.com/Saghen/blink.lib.git" },
 	{ src = "https://github.com/giuxtaposition/blink-cmp-copilot.git" },
@@ -141,13 +142,13 @@ local is_dark_theme = false
 local function toggle_theme()
 	if not is_dark_theme then
 		vim.o.background = "dark"
-		require("vague").setup{
+		require("vague").setup {
 			transparent = true
 		}
 		vim.cmd("colorscheme vague")
 	else
 		vim.o.background = "light"
-		require("vague").setup{
+		require("vague").setup {
 			transparent = false
 		}
 		vim.cmd("colorscheme vague")
@@ -156,6 +157,10 @@ local function toggle_theme()
 end
 toggle_theme()
 vim.keymap.set('n', 'tt', toggle_theme, { desc = "Toggle between light and dark theme" })
+
+require('base46').setup {
+	transparency = false,
+}
 
 require("nvim-treesitter").setup({
 	ensure_installed = {
@@ -770,6 +775,8 @@ require("todo-comments").setup {}
 require("trouble").setup {}
 vim.keymap.set("n", "<leader>qq", "<cmd>Trouble diagnostics toggle<CR>", { desc = "Diagnostics (Trouble)" })
 vim.keymap.set("n", "<leader>qx", "<cmd>Trouble qflist toggle<CR>", { desc = "Quickfix (Trouble)" })
+
+require("left")
 
 -- Init private work plugins:
 require("private")

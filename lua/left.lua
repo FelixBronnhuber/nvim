@@ -1,0 +1,37 @@
+return {}
+
+-- print("Hello from left.lua")
+--
+-- local sidebar_buf = vim.api.nvim_create_buf(false, true)
+--
+-- local sidebar_width = 30
+--
+-- local sidebar_win = vim.api.nvim_open_win(sidebar_buf, false, {
+-- 	-- relative = "editor",
+-- 	split = "left",
+-- 	-- row = 0,
+-- 	-- col = 0,
+-- 	width = sidebar_width,
+-- 	-- height = vim.o.lines - 2,
+-- 	style = "minimal",
+-- 	focusable = false,
+-- 	-- border = "none"
+-- })
+--
+-- vim.api.nvim_create_autocmd('BufAdd', {
+-- 	callback = function(ev)
+-- 		print("[left] `BuffAdd` handled")
+-- 		local buffer_list = vim.fn.getbufinfo({ buflisted = 1 })
+-- 		local buffer_names = {}
+-- 		for _, b in ipairs(buffer_list) do
+-- 			table.insert(buffer_names, vim.fn.fnamemodify(b["name"], ":t"))
+-- 		end
+-- 		vim.api.nvim_buf_set_lines(
+-- 			sidebar_buf,
+-- 			0,
+-- 			#buffer_names,
+-- 			false,
+-- 			buffer_names
+-- 		)
+-- 	end,
+-- })
