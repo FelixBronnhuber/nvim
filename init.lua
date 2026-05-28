@@ -195,7 +195,7 @@ require("mason-lspconfig").setup {
 }
 
 local blink = require('blink.cmp')
-blink.build():wait(60000)
+blink.build()
 blink.setup {
 	sources = {
 		default = { 'lsp', 'path' },
@@ -557,12 +557,6 @@ snacks.setup {
 			fps = 120,
 		},
 	},
-	explorer = {
-		enabled = true,
-		replace_netrw = true,
-		trash = true,
-		hidden = true,
-	},
 	scroll = { enabled = true },
 	zen = {
 		toggles = {
@@ -575,8 +569,6 @@ snacks.setup {
 	}
 }
 vim.keymap.set('n', '<leader>z', function() snacks.zen() end, { desc = 'Snacks Zen' })
-
-vim.keymap.set('n', '<A-\\>', function() snacks.explorer() end, { desc = 'Snacks explorer' })
 
 require("fidget").setup {
 	notification = {
@@ -595,28 +587,6 @@ require("fidget").setup {
 	progress = { display = { done_icon = icons.checkmark } },
 }
 
--- local bufferline = require("bufferline")
--- bufferline.setup {
--- 	options = {
--- 		-- Show more of the path for duplicate filenames
--- 		max_name_length = 40,
--- 		max_prefix_length = 30,
--- 		truncate_names = false,
--- 		-- Optionally, always show the parent folder for all files
--- 		name_formatter = function(buf)
--- 			local name = buf.name
--- 			local parent = vim.fn.fnamemodify(buf.path, ":h:t")
--- 			if parent ~= "." and parent ~= "" then
--- 				return parent .. "/" .. name
--- 			end
--- 			return name
--- 		end,
--- 		indicator = { style = 'none' },
--- 		separator_style = { '┊', '┊' },
--- 		show_buffer_close_icons = false,
--- 		always_show_bufferline = false,
--- 	}
--- }
 vim.keymap.set('n', '<leader>M', ':Fidget history<CR>', { desc = 'Show fidget message history' })
 
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
@@ -703,7 +673,8 @@ vim.keymap.set('n', '<leader>sn', function()
 	})
 end, { desc = "Search Daily Notes" })
 
-require("oil").setup {
+local oil = require("oil")
+oil.setup {
 	lsp_file_methods = {
 		enabled = true,
 		timeout_ms = 1000,
@@ -713,12 +684,12 @@ require("oil").setup {
 		"icon",
 	},
 	float = {
-		max_width = 0.3,
-		max_height = 0.6,
+		max_width = 0.9,
+		max_height = 0.9,
 		border = "rounded",
 	},
 }
-vim.keymap.set('n', '<leader>so', ":Oil<CR>", { desc = "Open Oil" })
+vim.keymap.set('n', '<A-\\>', oil.toggle_float, { desc = "Toggle Oil Float" })
 
 require("dockyard").setup {}
 vim.keymap.set('n', '<leader>dy', ":DockyardFloat<CR>", { desc = "Open Dock-Yard" })
