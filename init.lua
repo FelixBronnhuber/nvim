@@ -10,6 +10,7 @@ vim.o.scrolloff = 8
 vim.o.sidescrolloff = 8
 vim.o.termguicolors = true
 vim.o.exrc = true
+vim.o.cursorline = true
 
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
@@ -50,8 +51,10 @@ vim.pack.add({
 		src = "https://github.com/FelixBronnhuber/vague.nvim.git",
 		version = "feat/light-mode"
 	},
+	{ src = "https://github.com/catppuccin/nvim.git" },
+	{ src = "https://github.com/Mofiqul/vscode.nvim.git" },
+	{ src = "https://github.com/armannikoyan/rusty.git" },
 	{ src = "https://github.com/savq/melange-nvim.git" },
-	{ src = "https://github.com/AvengeMedia/base46.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
 	{ src = "https://github.com/Saghen/blink.lib.git" },
 	{ src = "https://github.com/giuxtaposition/blink-cmp-copilot.git" },
@@ -63,7 +66,6 @@ vim.pack.add({
 	{ src = "https://github.com/folke/sidekick.nvim.git" },
 	{ src = "https://github.com/olimorris/codecompanion.nvim.git" },
 	{ src = "https://github.com/ravitemer/codecompanion-history.nvim.git" },
-	-- { src = "https://github.com/yetone/avante.nvim.git" },
 	{ src = "https://github.com/mason-org/mason.nvim.git" },
 	{ src = "https://github.com/mason-org/mason-lspconfig.nvim.git" },
 	{ src = "https://github.com/nvim-neotest/nvim-nio.git" },
@@ -140,27 +142,21 @@ end, { desc = "Toggle floating btop-terminal" })
 
 local is_dark_theme = false
 local function toggle_theme()
+	require('catppuccin').setup {
+		transparent_background = not is_dark_theme,
+		float = {
+			transparent = not is_dark_theme,
+		}
+	}
 	if not is_dark_theme then
-		vim.o.background = "dark"
-		require("vague").setup {
-			transparent = true
-		}
-		vim.cmd("colorscheme vague")
+		vim.cmd.colorscheme "catppuccin-macchiato"
 	else
-		vim.o.background = "light"
-		require("vague").setup {
-			transparent = false
-		}
-		vim.cmd("colorscheme vague")
+		vim.cmd.colorscheme "catppuccin-latte"
 	end
 	is_dark_theme = not is_dark_theme;
 end
 toggle_theme()
 vim.keymap.set('n', 'tt', toggle_theme, { desc = "Toggle between light and dark theme" })
-
-require('base46').setup {
-	transparency = false,
-}
 
 require("nvim-treesitter").setup({
 	ensure_installed = {
@@ -195,7 +191,7 @@ require("mason-lspconfig").setup {
 }
 
 local blink = require('blink.cmp')
-blink.build()
+blink.build():wait(6000)
 blink.setup {
 	sources = {
 		default = { 'lsp', 'path' },
@@ -689,7 +685,7 @@ oil.setup {
 		border = "rounded",
 	},
 }
-vim.keymap.set('n', '<A-\\>', oil.toggle_float, { desc = "Toggle Oil Float" })
+vim.keymap.set('n', '<A-o>', oil.toggle_float, { desc = "Toggle Oil Float" })
 
 require("dockyard").setup {}
 vim.keymap.set('n', '<leader>dy', ":DockyardFloat<CR>", { desc = "Open Dock-Yard" })
