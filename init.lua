@@ -106,6 +106,7 @@ vim.pack.add({
 	{ src = "https://github.com/Aietes/esp32.nvim.git" },
 	{ src = "https://github.com/folke/todo-comments.nvim.git" },
 	{ src = "https://github.com/folke/trouble.nvim.git" },
+	{ src = "https://github.com/fei6409/log-highlight.nvim.git" },
 })
 
 vim.keymap.set('n', '<leader>U', function()
