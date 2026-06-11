@@ -12,6 +12,13 @@ vim.o.termguicolors = true
 vim.o.exrc = true
 vim.o.cursorline = true
 
+if vim.g.neovide then
+	vim.o.winblend = 100
+	vim.o.pumblend = 100
+	vim.g.neovide_floating_blur_amount_x = 30
+	vim.g.neovide_floating_blur_amount_y = 30
+end
+
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
 		vim.highlight.on_yank()
@@ -31,6 +38,9 @@ vim.keymap.set('n', '<leader>Y', function()
 	vim.cmd('normal! ggVG"+y')
 	vim.notify('Yanked buffer to clipboard', vim.log.levels.INFO)
 end, { desc = 'Yank entire buffer to clipboard' })
+
+vim.keymap.set({ 'n', 'v' }, 'H', '_', { silent = true, noremap = true })
+vim.keymap.set({ 'n', 'v' }, 'L', '$', { silent = true, noremap = true })
 
 vim.api.nvim_create_autocmd('PackChanged', {
 	callback = function(ev)
@@ -103,7 +113,6 @@ vim.pack.add({
 	{ src = "https://github.com/Sang-it/fluoride.git" },
 	{ src = "https://github.com/jbyuki/venn.nvim.git" },
 	{ src = "https://github.com/erichlf/devcontainer-cli.nvim.git" },
-	{ src = "https://github.com/Aietes/esp32.nvim.git" },
 	{ src = "https://github.com/folke/todo-comments.nvim.git" },
 	{ src = "https://github.com/folke/trouble.nvim.git" },
 	{ src = "https://github.com/fei6409/log-highlight.nvim.git" },
@@ -114,7 +123,7 @@ vim.keymap.set('n', '<leader>U', function()
 end, { desc = 'Update pack (:w to apply)' })
 
 local toggleterm = require("toggleterm")
-toggleterm.setup { float_opts = { border = 'curved' } }
+toggleterm.setup { float_opts = { border = 'curved', zindex = 500 } }
 
 local Terminal = require("toggleterm.terminal").Terminal
 local floatterm = Terminal:new { direction = 'float', hidden = true }
@@ -145,9 +154,38 @@ local is_dark_theme = false
 local function toggle_theme()
 	require('catppuccin').setup {
 		transparent_background = not is_dark_theme,
+		term_colors = true,
 		float = {
+			solid = false,
 			transparent = not is_dark_theme,
-		}
+		},
+		custom_highlights = function(colors)
+			local u = require("catppuccin.utils.colors")
+			local darken = 0.30
+			return {
+				-- Diagnostic virtual text with colored backgrounds (even with transparent_background enabled)
+				DiagnosticVirtualTextError = {
+					bg = u.darken(colors.red, darken, colors.base),
+					fg = colors.red,
+				},
+				DiagnosticVirtualTextWarn = {
+					bg = u.darken(colors.yellow, darken, colors.base),
+					fg = colors.yellow,
+				},
+				DiagnosticVirtualTextInfo = {
+					bg = u.darken(colors.sky, darken, colors.base),
+					fg = colors.sky,
+				},
+				DiagnosticVirtualTextHint = {
+					bg = u.darken(colors.teal, darken, colors.base),
+					fg = colors.teal,
+				},
+				DiagnosticVirtualTextOk = {
+					bg = u.darken(colors.teal, darken, colors.base),
+					fg = colors.green,
+				},
+			}
+		end
 	}
 	if not is_dark_theme then
 		vim.cmd.colorscheme "catppuccin-macchiato"
@@ -192,7 +230,7 @@ require("mason-lspconfig").setup {
 }
 
 local blink = require('blink.cmp')
-blink.build():wait(6000)
+blink.build():wait(10000)
 blink.setup {
 	sources = {
 		default = { 'lsp', 'path' },
@@ -442,7 +480,7 @@ vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = 'Telescope git 
 vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = 'Telescope git stashes' })
 vim.keymap.set('n', '<leader>gS', builtin.git_stash, { desc = 'Telescope git stashes' })
 vim.keymap.set('n', '<leader>gk', builtin.keymaps, { desc = 'Telescope key maps' })
-vim.keymap.set('n', '<leader>q', function()
+vim.keymap.set('n', '<leader>sq', function()
 	builtin.diagnostics({ wrap_results = true, line_width = "full" })
 end, { desc = 'Telescope dianostics' })
 vim.keymap.set('n', 'z=', builtin.spell_suggest, { noremap = true, desc = 'Telescope spell suggest' })
@@ -491,7 +529,7 @@ vim.keymap.set({ 'n', 't' }, '<A-c>', function()
 end, { noremap = true, desc = 'Toggle Sidekick (Agent)' })
 
 require("typst-preview").setup {}
-vim.keymap.set('n', '<leader>vt', ':TypstPreview<CR>', { desc = 'View typst preview' })
+vim.keymap.set('n', '<leader>tp', ':TypstPreview<CR>', { desc = 'View typst preview' })
 
 local helpers = require 'incline.helpers'
 local devicons = require 'nvim-web-devicons'
@@ -680,13 +718,17 @@ oil.setup {
 	columns = {
 		"icon",
 	},
+	preview_split = "right",
 	float = {
-		max_width = 0.9,
-		max_height = 0.9,
 		border = "rounded",
+		preview_split = "right",
+		override = function(conf)
+			conf.zindex = 51
+			return conf
+		end
 	},
 }
-vim.keymap.set('n', '<A-o>', oil.toggle_float, { desc = "Toggle Oil Float" })
+vim.keymap.set('n', '<A-e>', oil.toggle_float, { desc = "Toggle Oil Float" })
 
 require("dockyard").setup {}
 vim.keymap.set('n', '<leader>dy', ":DockyardFloat<CR>", { desc = "Open Dock-Yard" })
