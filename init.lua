@@ -152,46 +152,11 @@ end, { desc = "Toggle floating btop-terminal" })
 
 local is_dark_theme = false
 local function toggle_theme()
-	require('catppuccin').setup {
-		transparent_background = not is_dark_theme,
-		term_colors = true,
-		float = {
-			solid = false,
-			transparent = not is_dark_theme,
-		},
-		custom_highlights = function(colors)
-			local u = require("catppuccin.utils.colors")
-			local darken = 0.30
-			return {
-				-- Diagnostic virtual text with colored backgrounds (even with transparent_background enabled)
-				DiagnosticVirtualTextError = {
-					bg = u.darken(colors.red, darken, colors.base),
-					fg = colors.red,
-				},
-				DiagnosticVirtualTextWarn = {
-					bg = u.darken(colors.yellow, darken, colors.base),
-					fg = colors.yellow,
-				},
-				DiagnosticVirtualTextInfo = {
-					bg = u.darken(colors.sky, darken, colors.base),
-					fg = colors.sky,
-				},
-				DiagnosticVirtualTextHint = {
-					bg = u.darken(colors.teal, darken, colors.base),
-					fg = colors.teal,
-				},
-				DiagnosticVirtualTextOk = {
-					bg = u.darken(colors.teal, darken, colors.base),
-					fg = colors.green,
-				},
-			}
-		end
+	require('vague').setup {
+		transparent = not is_dark_theme,
+		style = is_dark_theme and "light" or "dark",
 	}
-	if not is_dark_theme then
-		vim.cmd.colorscheme "catppuccin-macchiato"
-	else
-		vim.cmd.colorscheme "catppuccin-latte"
-	end
+	vim.cmd.colorscheme "vague"
 	is_dark_theme = not is_dark_theme;
 end
 toggle_theme()
@@ -254,6 +219,7 @@ blink.setup {
 			dictionary = {
 				name = "blink-cmp-words",
 				module = "blink-cmp-words.dictionary",
+				score_offset = -100,
 			},
 		},
 	},
@@ -640,7 +606,15 @@ vim.keymap.set('n', '<leader>vs', function()
 	end
 end, { desc = 'Toggle spellcheck' })
 
-require("render-markdown").setup {}
+require("render-markdown").setup {
+	file_types = { "markdown", "codecompanion" },
+	overrides = {
+		filetype = {
+			markdown = {},
+			codecompanion = {},
+		}
+	}
+}
 
 require("which-key").setup {
 	delay = 800,
