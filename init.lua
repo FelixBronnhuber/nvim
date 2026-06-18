@@ -116,6 +116,7 @@ vim.pack.add({
 	{ src = "https://github.com/folke/todo-comments.nvim.git" },
 	{ src = "https://github.com/folke/trouble.nvim.git" },
 	{ src = "https://github.com/fei6409/log-highlight.nvim.git" },
+	{ src = "https://github.com/Selyss/mind.nvim.git" },
 })
 
 vim.keymap.set('n', '<leader>U', function()
@@ -759,6 +760,12 @@ require("todo-comments").setup {}
 require("trouble").setup {}
 vim.keymap.set("n", "<leader>qq", "<cmd>Trouble diagnostics toggle<CR>", { desc = "Diagnostics (Trouble)" })
 vim.keymap.set("n", "<leader>qx", "<cmd>Trouble qflist toggle<CR>", { desc = "Quickfix (Trouble)" })
+
+local mind = require("mind")
+mind.setup {}
+vim.keymap.set("n", "<leader>mm", mind.open_main, { desc = "Mind open main" })
+vim.keymap.set("n", "<leader>mp", mind.open_smart_project, { desc = "Mind open main" })
+
 
 require("left")
 
