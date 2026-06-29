@@ -116,7 +116,6 @@ vim.pack.add({
 	{ src = "https://github.com/folke/todo-comments.nvim.git" },
 	{ src = "https://github.com/folke/trouble.nvim.git" },
 	{ src = "https://github.com/fei6409/log-highlight.nvim.git" },
-	{ src = "https://github.com/Selyss/mind.nvim.git" },
 })
 
 vim.keymap.set('n', '<leader>U', function()
@@ -708,11 +707,13 @@ vim.keymap.set('n', '<A-e>', oil.toggle_float, { desc = "Toggle Oil Float" })
 require("dockyard").setup {}
 vim.keymap.set('n', '<leader>dy', ":DockyardFloat<CR>", { desc = "Open Dock-Yard" })
 
-require("fluoride").setup {
+local fluoride = require("fluoride")
+fluoride.setup {
 	window = {
 		border = "rounded",
 	},
 }
+vim.keymap.set('n', '<A-F>', fluoride.toggle, { desc = "Toggle Fluoride" })
 
 -- venn.nvim: enable or disable keymappings
 function _G.Toggle_venn()
@@ -760,12 +761,6 @@ require("todo-comments").setup {}
 require("trouble").setup {}
 vim.keymap.set("n", "<leader>qq", "<cmd>Trouble diagnostics toggle<CR>", { desc = "Diagnostics (Trouble)" })
 vim.keymap.set("n", "<leader>qx", "<cmd>Trouble qflist toggle<CR>", { desc = "Quickfix (Trouble)" })
-
-local mind = require("mind")
-mind.setup {}
-vim.keymap.set("n", "<leader>mm", mind.open_main, { desc = "Mind open main" })
-vim.keymap.set("n", "<leader>mp", mind.open_smart_project, { desc = "Mind open main" })
-
 
 require("left")
 
