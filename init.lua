@@ -3,7 +3,7 @@ vim.o.relativenumber = true
 vim.o.signcolumn = "yes"
 vim.o.wrap = false
 vim.o.swapfile = false
-vim.o.tabstop = 8
+vim.o.tabstop = 4
 vim.o.winborder = "rounded"
 vim.g.havenerdfont = true
 vim.o.scrolloff = 8
@@ -22,6 +22,22 @@ end
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
 		vim.highlight.on_yank()
+	end,
+})
+
+local grp = vim.api.nvim_create_augroup("SyncRegisters", { clear = true })
+
+vim.api.nvim_create_autocmd("TextYankPost", {
+	group = grp,
+	callback = function()
+		vim.cmd("wshada")
+	end,
+})
+
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+	group = grp,
+	callback = function()
+		vim.cmd("rshada")
 	end,
 })
 
@@ -62,7 +78,6 @@ vim.pack.add({
 		version = "feat/light-mode"
 	},
 	{ src = "https://github.com/catppuccin/nvim.git" },
-	{ src = "https://github.com/Mofiqul/vscode.nvim.git" },
 	{ src = "https://github.com/armannikoyan/rusty.git" },
 	{ src = "https://github.com/savq/melange-nvim.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
@@ -116,6 +131,8 @@ vim.pack.add({
 	{ src = "https://github.com/folke/todo-comments.nvim.git" },
 	{ src = "https://github.com/folke/trouble.nvim.git" },
 	{ src = "https://github.com/fei6409/log-highlight.nvim.git" },
+	{ src = "https://github.com/lukas-reineke/indent-blankline.nvim.git" },
+	{ src = "https://github.com/TheGLander/indent-rainbowline.nvim.git" },
 })
 
 vim.keymap.set('n', '<leader>U', function()
@@ -153,14 +170,14 @@ end, { desc = "Toggle floating btop-terminal" })
 local is_dark_theme = false
 local function toggle_theme()
 	require('vague').setup {
-		transparent = not is_dark_theme,
+		-- transparent = not is_dark_theme,
 		style = is_dark_theme and "light" or "dark",
 	}
 	vim.cmd.colorscheme "vague"
 	is_dark_theme = not is_dark_theme;
 end
 toggle_theme()
-vim.keymap.set('n', 'tt', toggle_theme, { desc = "Toggle between light and dark theme" })
+vim.keymap.set('n', 'I', toggle_theme, { desc = "Toggle between light and dark theme" })
 
 require("nvim-treesitter").setup({
 	ensure_installed = {
@@ -239,7 +256,7 @@ vim.lsp.config('lua_ls', {
 		if client.workspace_folders then
 			local path = client.workspace_folders[1].name
 			if path ~= vim.fn.stdpath('config')
-			    and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc'))
+				and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc'))
 			then
 				return
 			end
@@ -536,28 +553,6 @@ require('lualine').setup {
 
 local snacks = require("snacks")
 snacks.setup {
-	indent = {
-		enabled = true,
-		indent = {
-			priority = 1,
-			enabled = true,
-			char = '┊',
-		},
-		chunk = {
-			enabled = true,
-			char = {
-				corner_top = "╭",
-				corner_bottom = "╰",
-				horizontal = "─",
-				vertical = "│",
-				arrow = "ᐅ",
-			},
-		},
-		animate = {
-			duration = 10,
-			fps = 120,
-		},
-	},
 	scroll = { enabled = true },
 	zen = {
 		toggles = {
@@ -761,6 +756,16 @@ require("todo-comments").setup {}
 require("trouble").setup {}
 vim.keymap.set("n", "<leader>qq", "<cmd>Trouble diagnostics toggle<CR>", { desc = "Diagnostics (Trouble)" })
 vim.keymap.set("n", "<leader>qx", "<cmd>Trouble qflist toggle<CR>", { desc = "Quickfix (Trouble)" })
+
+local opts = {
+	indent = { char = '' }
+}
+require("ibl").setup(
+	require("indent-rainbowline").make_opts(opts, {
+		color_transparency = 0.1,
+		colors = { 0x7e98e8, 0xb4d4cf, 0xe8b589, 0xc48282, 0xbb9dbd, 0xaeaed1, },
+	})
+)
 
 require("left")
 
