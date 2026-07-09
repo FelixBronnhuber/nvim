@@ -77,9 +77,8 @@ vim.pack.add({
 		src = "https://github.com/FelixBronnhuber/vague.nvim.git",
 		version = "feat/light-mode"
 	},
-	{ src = "https://github.com/catppuccin/nvim.git" },
-	{ src = "https://github.com/armannikoyan/rusty.git" },
-	{ src = "https://github.com/savq/melange-nvim.git" },
+	{ src = "https://github.com/rktjmp/lush.nvim.git" },
+	{ src = "https://github.com/metalelf0/jellybeans-nvim.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
 	{ src = "https://github.com/Saghen/blink.lib.git" },
 	{ src = "https://github.com/giuxtaposition/blink-cmp-copilot.git" },
@@ -106,7 +105,6 @@ vim.pack.add({
 	{ src = "https://github.com/b0o/incline.nvim.git" },
 	{ src = "https://github.com/lervag/vimtex.git" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim.git" },
-	{ src = "https://github.com/nvim-mini/mini.diff.git" },
 	{ src = "https://github.com/folke/lazydev.nvim.git" },
 	{ src = "https://github.com/folke/which-key.nvim.git" },
 	{ src = "https://github.com/hat0uma/csvview.nvim.git" },
@@ -167,17 +165,17 @@ vim.keymap.set({ "n", "t" }, "<A-p>", function()
 	end
 end, { desc = "Toggle floating btop-terminal" })
 
-local is_dark_theme = false
-local function toggle_theme()
-	require('vague').setup {
-		-- transparent = not is_dark_theme,
-		style = is_dark_theme and "light" or "dark",
-	}
-	vim.cmd.colorscheme "vague"
-	is_dark_theme = not is_dark_theme;
-end
-toggle_theme()
-vim.keymap.set('n', 'I', toggle_theme, { desc = "Toggle between light and dark theme" })
+-- local is_dark_theme = true
+-- local function toggle_theme()
+-- 	is_dark_theme = not is_dark_theme;
+-- 	require('vague').setup {
+-- 		style = is_dark_theme and "light" or "dark",
+-- 	}
+-- 	vim.cmd.colorscheme "vague"
+-- end
+-- toggle_theme()
+-- vim.keymap.set('n', 'I', toggle_theme, { desc = "Toggle between light and dark theme" })
+vim.cmd.colorscheme "jellybeans-nvim"
 
 require("nvim-treesitter").setup({
 	ensure_installed = {
@@ -287,85 +285,102 @@ vim.schedule(function()
 	end
 end)
 
-require("mason-nvim-dap").setup {
-	ensure_installed = { "codelldb", "debugpy" },
-	automatic_installation = true,
-}
-local dap = require("dap")
+-- DAP stack is loaded lazily on first use (see load_dap below) to keep startup fast.
+local dap, dapui
+local dap_loaded = false
+local function load_dap()
+	if dap_loaded then
+		return
+	end
+	dap_loaded = true
 
-dap.adapters.codelldb = {
-	type = 'server',
-	port = "${port}",
-	executable = {
-		-- Mason installs codelldb here:
-		command = vim.fn.stdpath("data") .. "/mason/bin/codelldb",
-		args = { "--port", "${port}" },
+	require("mason-nvim-dap").setup {
+		ensure_installed = { "codelldb", "debugpy" },
+		automatic_installation = true,
 	}
-}
-dap.configurations.cpp = {
-	{
-		name = "Launch file",
-		type = "codelldb",
-		request = "launch",
-		program = function()
-			return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-		end,
-		cwd = '${workspaceFolder}',
-		stopOnEntry = false,
-	},
-}
-dap.configurations.c = dap.configurations.cpp
-dap.configurations.rust = dap.configurations.cpp
+	dap = require("dap")
 
-require("nvim-dap-virtual-text").setup {}
+	dap.adapters.codelldb = {
+		type = 'server',
+		port = "${port}",
+		executable = {
+			-- Mason installs codelldb here:
+			command = vim.fn.stdpath("data") .. "/mason/bin/codelldb",
+			args = { "--port", "${port}" },
+		}
+	}
+	dap.configurations.cpp = {
+		{
+			name = "Launch file",
+			type = "codelldb",
+			request = "launch",
+			program = function()
+				return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+			end,
+			cwd = '${workspaceFolder}',
+			stopOnEntry = false,
+		},
+	}
+	dap.configurations.c = dap.configurations.cpp
+	dap.configurations.rust = dap.configurations.cpp
 
-local dapui = require('dapui')
-dapui.setup()
+	require("nvim-dap-virtual-text").setup {}
+
+	dapui = require('dapui')
+	dapui.setup()
+
+	local dap_keymaps = {
+		{ 'n', '<Up>',      dap.step_out,      'DAP Step Out' },
+		{ 'n', '<Down>',    dap.step_into,     'DAP Step Into' },
+		{ 'n', '<Left>',    dap.continue,      'DAP Continue' },
+		{ 'n', '<Right>',   dap.step_over,     'DAP Step Over' },
+		{ 'n', '<S-Right>', dap.run_to_cursor, 'DAP Run to Cursor' },
+	}
+	local function set_dap_keymaps()
+		for _, map in ipairs(dap_keymaps) do
+			vim.keymap.set(map[1], map[2], map[3], { desc = map[4] })
+		end
+	end
+	local function unset_dap_keymaps()
+		for _, map in ipairs(dap_keymaps) do
+			pcall(vim.keymap.del, map[1], map[2])
+		end
+	end
+	dap.listeners.after.event_initialized["dap_keymaps"] = set_dap_keymaps
+	dap.listeners.after.event_terminated["dap_keymaps"] = unset_dap_keymaps
+	dap.listeners.after.event_exited["dap_keymaps"] = unset_dap_keymaps
+end
+
 vim.keymap.set('n', '<A-d>', function()
+	load_dap()
 	dapui.toggle()
 end, { desc = "Toggle Debug UI" })
 vim.keymap.set('n', '<leader>dr', function()
+	load_dap()
 	dap.toggle_breakpoint()
 	dapui.toggle()
 	dap.continue()
 end, { desc = "Debug run to current line" })
 
 vim.keymap.set('n', '<leader>db', function()
+	load_dap()
 	dap.toggle_breakpoint()
 end, { desc = "Toggle Breakpoint" })
 
 vim.keymap.set('n', '<leader>ds', function()
+	load_dap()
 	dap.continue()
 end, { desc = "DAP Start" })
 
 vim.keymap.set('n', '<leader>dR', function()
+	load_dap()
 	dap.restart()
 end, { desc = "DAP Restart" })
 
 vim.keymap.set('n', '<leader>dq', function()
+	load_dap()
 	dap.stop()
 end, { desc = "DAP Quit / Stop" })
-
-local dap_keymaps = {
-	{ 'n', '<Up>',      dap.step_out,      'DAP Step Out' },
-	{ 'n', '<Down>',    dap.step_into,     'DAP Step Into' },
-	{ 'n', '<Left>',    dap.continue,      'DAP Continue' },
-	{ 'n', '<Right>',   dap.step_over,     'DAP Step Over' },
-	{ 'n', '<S-Right>', dap.run_to_cursor, 'DAP Run to Cursor' },
-}
-local function set_dap_keymaps()
-	for _, map in ipairs(dap_keymaps) do
-		vim.keymap.set(map[1], map[2], map[3], { desc = map[4] })
-	end
-end
-local function unset_dap_keymaps()
-	for _, map in ipairs(dap_keymaps) do
-		pcall(vim.keymap.del, map[1], map[2])
-	end
-end
-dap.listeners.after.event_initialized["dap_keymaps"] = set_dap_keymaps
-dap.listeners.after.event_terminated["dap_keymaps"] = unset_dap_keymaps
-dap.listeners.after.event_exited["dap_keymaps"] = unset_dap_keymaps
 
 local icons = {
 	ERROR = '󰅚 ',
@@ -423,15 +438,12 @@ vim.keymap.set("n", "<leader>dt", "<cmd>TinyInlineDiag toggle<cr>", { desc = "To
 vim.keymap.set("n", "<leader>Q", vim.diagnostic.setqflist, { desc = "Add buffer diagnostics to quickfix list" })
 
 local gitsigns = require('gitsigns')
-gitsigns.setup {
-	numhl = true,
-}
+gitsigns.setup {}
 vim.keymap.set('n', '<leader>gB', gitsigns.blame, { desc = 'Toggle git blame' })
+vim.keymap.set('n', '[c', function() gitsigns.nav_hunk('prev') end, { desc = 'Jump to previous git Change (hunk)' })
+vim.keymap.set('n', ']c', function() gitsigns.nav_hunk('next') end, { desc = 'Jump to next git Change (hunk)' })
 
-require('mini.diff').setup {}
-vim.keymap.set('n', '<leader>gd', MiniDiff.toggle_overlay, { desc = 'Toggle git diff overlay' })
-
-vim.keymap.set('n', '<leader>gD', ':CodeDiff<CR>', { desc = 'Toggle git split code diff' })
+vim.keymap.set('n', '<leader>gd', ':CodeDiff<CR>', { desc = 'Toggle git split code diff' })
 
 local telescope = require("telescope")
 local builtin = require('telescope.builtin')
@@ -481,33 +493,43 @@ vim.api.nvim_create_autocmd('LspAttach', {
 	end
 })
 
-require("codecompanion").setup {
-	extensions = { history = { enabled = true } },
-	display = {
-		chat = {
-			intro_message = "Blechdepp Chat",
+-- CodeCompanion is loaded lazily on first use to keep startup fast.
+local codecompanion_loaded = false
+local function load_codecompanion()
+	if codecompanion_loaded then
+		return
+	end
+	codecompanion_loaded = true
+	require("codecompanion").setup {
+		extensions = { history = { enabled = true } },
+		display = {
+			chat = {
+				intro_message = "Blechdepp Chat",
+			},
 		},
-	},
-}
+	}
+end
 
-vim.keymap.set(
-	'n', '<leader>co',
-	':CodeCompanionChat<CR>',
-	{ noremap = true, desc = 'CodeCompanionChat Open' }
-)
-vim.keymap.set(
-	'n', '<leader>ch',
-	':CodeCompanionHistory<CR>',
-	{ noremap = true, desc = 'CodeCompanionChat Open' }
-)
+vim.keymap.set('n', '<leader>co', function()
+	load_codecompanion()
+	vim.cmd('CodeCompanionChat')
+end, { noremap = true, desc = 'CodeCompanionChat Open' })
+vim.keymap.set('n', '<leader>ch', function()
+	load_codecompanion()
+	vim.cmd('CodeCompanionHistory')
+end, { noremap = true, desc = 'CodeCompanion History' })
 
-require("sidekick").setup {
-	nes = { enabled = false },
-	cli = { win = { layout = "right" } },
-}
-local sidekick_cli = require('sidekick.cli')
+-- Sidekick is loaded lazily on first use to keep startup fast.
+local sidekick_loaded = false
 vim.keymap.set({ 'n', 't' }, '<A-c>', function()
-	sidekick_cli.toggle()
+	if not sidekick_loaded then
+		sidekick_loaded = true
+		require("sidekick").setup {
+			nes = { enabled = false },
+			cli = { win = { layout = "right" } },
+		}
+	end
+	require('sidekick.cli').toggle()
 	vim.cmd('stopinsert')
 end, { noremap = true, desc = 'Toggle Sidekick (Agent)' })
 
@@ -558,7 +580,6 @@ snacks.setup {
 		toggles = {
 			dim = true,
 			git_signs = false,
-			mini_diff_signs = false,
 			diagnostics = false,
 		},
 		enabled = true,
@@ -762,8 +783,9 @@ local opts = {
 }
 require("ibl").setup(
 	require("indent-rainbowline").make_opts(opts, {
-		color_transparency = 0.1,
-		colors = { 0x7e98e8, 0xb4d4cf, 0xe8b589, 0xc48282, 0xbb9dbd, 0xaeaed1, },
+		color_transparency = 0.15,
+		-- colors = { 0x7e98e8, 0xb4d4cf, 0xe8b589, 0xc48282, 0xbb9dbd, 0xaeaed1, },
+		colors = { 0xd98870, 0xfad07a, 0x99ad6a, 0x8fbfdc, 0x8197bf, 0xc6b6ee }
 	})
 )
 
