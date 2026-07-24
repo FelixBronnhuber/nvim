@@ -12,13 +12,6 @@ vim.o.termguicolors = true
 vim.o.exrc = true
 vim.o.cursorline = true
 
-if vim.g.neovide then
-	vim.o.winblend = 100
-	vim.o.pumblend = 100
-	vim.g.neovide_floating_blur_amount_x = 30
-	vim.g.neovide_floating_blur_amount_y = 30
-end
-
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
 		vim.highlight.on_yank()
@@ -58,6 +51,11 @@ end, { desc = 'Yank entire buffer to clipboard' })
 vim.keymap.set({ 'n', 'v' }, 'H', '_', { silent = true, noremap = true })
 vim.keymap.set({ 'n', 'v' }, 'L', '$', { silent = true, noremap = true })
 
+vim.api.nvim_set_keymap('n', '<F5>', ':mksession! Session.vim<CR>',
+	{ noremap = true, silent = true, desc = "Saves the current session" })
+vim.api.nvim_set_keymap('n', '<F6>', ':source Session.vim<CR>',
+	{ noremap = true, silent = true, desc = "Loads the saved session" })
+
 vim.api.nvim_create_autocmd('PackChanged', {
 	callback = function(ev)
 		local name, kind = ev.data.spec.name, ev.data.kind
@@ -72,13 +70,7 @@ vim.pack.add({
 	{ src = "https://github.com/tpope/vim-sleuth.git" },
 	{ src = "https://github.com/neovim/nvim-lspconfig.git" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter.git" },
-	-- { src = "https://github.com/vague-theme/vague.nvim.git" },
-	{
-		src = "https://github.com/FelixBronnhuber/vague.nvim.git",
-		version = "feat/light-mode"
-	},
-	{ src = "https://github.com/rktjmp/lush.nvim.git" },
-	{ src = "https://github.com/metalelf0/jellybeans-nvim.git" },
+	{ src = "https://github.com/mellow-theme/mellow.nvim.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
 	{ src = "https://github.com/Saghen/blink.lib.git" },
 	{ src = "https://github.com/giuxtaposition/blink-cmp-copilot.git" },
@@ -131,6 +123,7 @@ vim.pack.add({
 	{ src = "https://github.com/fei6409/log-highlight.nvim.git" },
 	{ src = "https://github.com/lukas-reineke/indent-blankline.nvim.git" },
 	{ src = "https://github.com/TheGLander/indent-rainbowline.nvim.git" },
+	{ src = "https://github.com/mr-u0b0dy/crazy-coverage.nvim.git" },
 })
 
 vim.keymap.set('n', '<leader>U', function()
@@ -165,17 +158,29 @@ vim.keymap.set({ "n", "t" }, "<A-p>", function()
 	end
 end, { desc = "Toggle floating btop-terminal" })
 
--- local is_dark_theme = true
--- local function toggle_theme()
--- 	is_dark_theme = not is_dark_theme;
--- 	require('vague').setup {
--- 		style = is_dark_theme and "light" or "dark",
--- 	}
--- 	vim.cmd.colorscheme "vague"
--- end
--- toggle_theme()
--- vim.keymap.set('n', 'I', toggle_theme, { desc = "Toggle between light and dark theme" })
-vim.cmd.colorscheme "jellybeans-nvim"
+vim.cmd.colorscheme "mellow"
+
+vim.api.nvim_set_hl(0, "Visual", { bg = "#4a3b5c" })
+vim.api.nvim_set_hl(0, "VisualNOS", { bg = "#4a3b5c" })
+
+local function mellow_diff_highlights()
+	vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#2e3832" })
+	vim.api.nvim_set_hl(0, "DiffChange", { bg = "#3c342d" })
+	vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#432d30" })
+	vim.api.nvim_set_hl(0, "DiffText", { bg = "#554837" })
+
+	require("codediff.ui.highlights").setup()
+end
+
+mellow_diff_highlights()
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+	callback = function()
+		if vim.g.colors_name == "mellow" then
+			mellow_diff_highlights()
+		end
+	end,
+})
 
 require("nvim-treesitter").setup({
 	ensure_installed = {
@@ -451,7 +456,7 @@ local actions = require('telescope.actions')
 
 telescope.setup {
 	defaults = {
-		layout_config = { width = 0.91, },
+		layout_config = { width = 0.91 },
 		color_devicons = true,
 	},
 }
@@ -472,7 +477,7 @@ vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = 'Telescope live gr
 vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = 'Telescope keymap' })
 vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = 'Telescope help tags' })
 vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = 'Telescope git branches' })
-vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = 'Telescope git stashes' })
+vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = 'Telescope git status' })
 vim.keymap.set('n', '<leader>gS', builtin.git_stash, { desc = 'Telescope git stashes' })
 vim.keymap.set('n', '<leader>gk', builtin.keymaps, { desc = 'Telescope key maps' })
 vim.keymap.set('n', '<leader>sq', function()
@@ -575,10 +580,10 @@ require('lualine').setup {
 
 local snacks = require("snacks")
 snacks.setup {
-	scroll = { enabled = true },
+	scroll = { enabled = false },
 	zen = {
 		toggles = {
-			dim = true,
+			dim = false,
 			git_signs = false,
 			diagnostics = false,
 		},
@@ -712,6 +717,7 @@ oil.setup {
 	float = {
 		border = "rounded",
 		preview_split = "right",
+		padding = 4,
 		override = function(conf)
 			conf.zindex = 51
 			return conf
@@ -719,6 +725,7 @@ oil.setup {
 	},
 }
 vim.keymap.set('n', '<A-e>', oil.toggle_float, { desc = "Toggle Oil Float" })
+vim.keymap.set('n', '<leader>so', ":Oil<CR>", { desc = "Oil" })
 
 require("dockyard").setup {}
 vim.keymap.set('n', '<leader>dy', ":DockyardFloat<CR>", { desc = "Open Dock-Yard" })
@@ -729,7 +736,7 @@ fluoride.setup {
 		border = "rounded",
 	},
 }
-vim.keymap.set('n', '<A-F>', fluoride.toggle, { desc = "Toggle Fluoride" })
+vim.keymap.set('n', '<A-\'>', fluoride.toggle, { desc = "Toggle Fluoride" })
 
 -- venn.nvim: enable or disable keymappings
 function _G.Toggle_venn()
@@ -781,15 +788,22 @@ vim.keymap.set("n", "<leader>qx", "<cmd>Trouble qflist toggle<CR>", { desc = "Qu
 local opts = {
 	indent = { char = '' }
 }
-require("ibl").setup(
-	require("indent-rainbowline").make_opts(opts, {
-		color_transparency = 0.15,
-		-- colors = { 0x7e98e8, 0xb4d4cf, 0xe8b589, 0xc48282, 0xbb9dbd, 0xaeaed1, },
-		colors = { 0xd98870, 0xfad07a, 0x99ad6a, 0x8fbfdc, 0x8197bf, 0xc6b6ee }
-	})
-)
+require("ibl").setup(require("indent-rainbowline").make_opts(opts, {
+	color_transparency = 0.1,
+	colors = { 0x90b99f, 0xaca1cf, 0xe29eca, 0xea83a5, 0xf5a191, 0xe6b99d },
+}))
 
 require("left")
 
+require("crazy-coverage").setup {
+	coverage_dirs = {
+		"target/llvm-cov-target",
+		"build/coverage",
+	}
+}
+
 -- Init private work plugins:
 require("private")
+
+vim.lsp.config('ntt', { capabilities = capabilities })
+vim.lsp.enable('ntt')
