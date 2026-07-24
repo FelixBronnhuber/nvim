@@ -158,29 +158,8 @@ vim.keymap.set({ "n", "t" }, "<A-p>", function()
 	end
 end, { desc = "Toggle floating btop-terminal" })
 
-vim.cmd.colorscheme "mellow"
-
-vim.api.nvim_set_hl(0, "Visual", { bg = "#4a3b5c" })
-vim.api.nvim_set_hl(0, "VisualNOS", { bg = "#4a3b5c" })
-
-local function mellow_diff_highlights()
-	vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#2e3832" })
-	vim.api.nvim_set_hl(0, "DiffChange", { bg = "#3c342d" })
-	vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#432d30" })
-	vim.api.nvim_set_hl(0, "DiffText", { bg = "#554837" })
-
-	require("codediff.ui.highlights").setup()
-end
-
-mellow_diff_highlights()
-
-vim.api.nvim_create_autocmd("ColorScheme", {
-	callback = function()
-		if vim.g.colors_name == "mellow" then
-			mellow_diff_highlights()
-		end
-	end,
-})
+local mellow_config = require("mellow_config")
+mellow_config.setup()
 
 require("nvim-treesitter").setup({
 	ensure_installed = {
@@ -790,7 +769,7 @@ local opts = {
 }
 require("ibl").setup(require("indent-rainbowline").make_opts(opts, {
 	color_transparency = 0.1,
-	colors = { 0x90b99f, 0xaca1cf, 0xe29eca, 0xea83a5, 0xf5a191, 0xe6b99d },
+	colors = mellow_config.ibl_rainbow_colors()
 }))
 
 require("left")
@@ -803,7 +782,6 @@ require("crazy-coverage").setup {
 }
 
 -- Init private work plugins:
-require("private")
-
-vim.lsp.config('ntt', { capabilities = capabilities })
-vim.lsp.enable('ntt')
+require("work_private").setup {
+	capabilities = capabilities
+}
