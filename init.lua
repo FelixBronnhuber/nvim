@@ -12,6 +12,29 @@ vim.o.termguicolors = true
 vim.o.exrc = true
 vim.o.cursorline = true
 
+if vim.fn.has("wsl") == 1 then
+	local paste = {
+		"powershell.exe",
+		"-NoLogo",
+		"-NoProfile",
+		"-Command",
+		'[Console]::Out.Write($(Get-Clipboard -Raw).ToString().Replace("`r", ""))',
+	}
+
+	vim.g.clipboard = {
+		name = "WslClipboard",
+		copy = {
+			["+"] = "clip.exe",
+			["*"] = "clip.exe",
+		},
+		paste = {
+			["+"] = paste,
+			["*"] = paste,
+		},
+		cache_enabled = 0,
+	}
+end
+
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
 		vim.highlight.on_yank()
@@ -382,7 +405,9 @@ require('mini.icons').setup()
 MiniIcons.mock_nvim_web_devicons()
 
 vim.diagnostic.config({
-	virtual_text = true,
+	virtual_text = {
+		prefix = "  ",
+	},
 	signs = {
 		text = {
 			[vim.diagnostic.severity.ERROR] = icons.ERROR,
@@ -416,6 +441,13 @@ vim.keymap.set('n', 'gK', function()
 	local new_config = not vim.diagnostic.config().underline
 	vim.diagnostic.config({ underline = new_config })
 end, { desc = 'Toggle diagnostic underline' })
+
+vim.keymap.set('n', ']e', function()
+	vim.diagnostic.jump({ count = 1, float = true })
+end, { desc = 'Go to next diagnostic message' })
+vim.keymap.set('n', '[e', function()
+	vim.diagnostic.jump({ count = -1, float = true })
+end, { desc = 'Go to previous diagnostic message' })
 
 vim.keymap.set("n", "<leader>dt", "<cmd>TinyInlineDiag toggle<cr>", { desc = "Toggle diagnostics" })
 
@@ -489,6 +521,7 @@ local function load_codecompanion()
 		display = {
 			chat = {
 				intro_message = "Blechdepp Chat",
+				adapter = "cursor-cli",
 			},
 		},
 	}
@@ -768,7 +801,7 @@ local opts = {
 	indent = { char = '' }
 }
 require("ibl").setup(require("indent-rainbowline").make_opts(opts, {
-	color_transparency = 0.1,
+	color_transparency = 0.15,
 	colors = mellow_config.ibl_rainbow_colors()
 }))
 
