@@ -485,7 +485,7 @@ vim.keymap.set('n', '<leader>sv', function()
 	})
 end, { desc = 'Telescope find files (split)' })
 vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = 'Telescope live grep' })
-vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = 'Telescope keymap' })
+vim.keymap.set('n', '<leader>sK', builtin.keymaps, { desc = 'Telescope keymap' })
 vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = 'Telescope help tags' })
 vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = 'Telescope git branches' })
 vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = 'Telescope git status' })
@@ -818,3 +818,8 @@ require("crazy-coverage").setup {
 require("work_private").setup {
 	capabilities = capabilities
 }
+
+vim.keymap.set('n', '<leader>kb', ':K3Build<CR>', { desc = 'K3 TTCN-3 build' })
+vim.keymap.set('n', '<leader>kr', ':K3Run<CR>', { desc = 'K3 TTCN-3 run' })
+vim.keymap.set('n', '<leader>kd', ':K3Disassemble<CR>', { desc = 'K3 TTCN-3 disassemble' })
+vim.keymap.set('n', '<leader>ko', ':K3Objdump<CR>', { desc = 'K3 TTCN-3 object dump' })
