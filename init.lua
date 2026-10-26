@@ -217,7 +217,7 @@ require("mason-lspconfig").setup {
 }
 
 local blink = require('blink.cmp')
-blink.build():wait(10000)
+blink.build():pwait()
 blink.setup {
 	sources = {
 		default = { 'lsp', 'path' },
