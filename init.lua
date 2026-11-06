@@ -4,7 +4,7 @@ vim.o.signcolumn = "yes"
 vim.o.wrap = false
 vim.o.swapfile = false
 vim.o.tabstop = 4
-vim.o.winborder = "rounded"
+vim.o.winborder = "single"
 vim.g.havenerdfont = true
 vim.o.scrolloff = 8
 vim.o.sidescrolloff = 8
@@ -32,6 +32,24 @@ if vim.fn.has("wsl") == 1 then
 			["*"] = paste,
 		},
 		cache_enabled = 0,
+	}
+elseif vim.env.SSH_TTY then
+	-- Most terminals refuse OSC 52 reads, so paste from the unnamed register instead
+	local osc52 = require("vim.ui.clipboard.osc52")
+	local function paste()
+		return { vim.split(vim.fn.getreg('"'), "\n"), vim.fn.getregtype('"') }
+	end
+
+	vim.g.clipboard = {
+		name = "OSC 52",
+		copy = {
+			["+"] = osc52.copy("+"),
+			["*"] = osc52.copy("*"),
+		},
+		paste = {
+			["+"] = paste,
+			["*"] = paste,
+		},
 	}
 end
 
@@ -94,6 +112,7 @@ vim.pack.add({
 	{ src = "https://github.com/neovim/nvim-lspconfig.git" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter.git" },
 	{ src = "https://github.com/mellow-theme/mellow.nvim.git" },
+	{ src = "https://github.com/vague-theme/vague.nvim.git" },
 	{ src = "https://github.com/Saghen/blink.cmp.git" },
 	{ src = "https://github.com/Saghen/blink.lib.git" },
 	{ src = "https://github.com/giuxtaposition/blink-cmp-copilot.git" },
@@ -145,16 +164,30 @@ vim.pack.add({
 	{ src = "https://github.com/folke/trouble.nvim.git" },
 	{ src = "https://github.com/fei6409/log-highlight.nvim.git" },
 	{ src = "https://github.com/lukas-reineke/indent-blankline.nvim.git" },
-	{ src = "https://github.com/TheGLander/indent-rainbowline.nvim.git" },
 	{ src = "https://github.com/mr-u0b0dy/crazy-coverage.nvim.git" },
+	{ src = "https://github.com/folke/tokyonight.nvim.git" },
+	{ src = "https://github.com/ldelossa/litee-calltree.nvim.git" },
+	{ src = "https://github.com/ldelossa/litee.nvim.git" },
+	{ src = "https://github.com/rktjmp/lush.nvim.git" },
+	{ src = "https://github.com/zenbones-theme/zenbones.nvim.git" },
+	{ src = "https://github.com/EdenEast/nightfox.nvim.git" },
+	{ src = "https://github.com/rebelot/kanagawa.nvim.git" },
 })
 
 vim.keymap.set('n', '<leader>U', function()
 	vim.pack.update()
 end, { desc = 'Update pack (:w to apply)' })
 
+vim.api.nvim_create_user_command("PackClean", function()
+	local inactive = vim.iter(vim.pack.get())
+		:filter(function(p) return not p.active end)
+		:map(function(p) return p.spec.name end)
+		:totable()
+	vim.pack.del(inactive)
+end, { desc = "Remove plugins no longer in vim.pack.add" })
+
 local toggleterm = require("toggleterm")
-toggleterm.setup { float_opts = { border = 'curved', zindex = 500 } }
+toggleterm.setup { float_opts = { border = 'single', zindex = 500 } }
 
 local Terminal = require("toggleterm.terminal").Terminal
 local floatterm = Terminal:new { direction = 'float', hidden = true }
@@ -162,6 +195,30 @@ vim.keymap.set('t', '<esc>', [[<C-\><C-n>]])
 vim.keymap.set({ 'n', 't' }, '<A-i>', function()
 	floatterm:toggle()
 end, { desc = 'Toggle floating terminal' })
+
+local file_dir_term
+vim.keymap.set({ 'n', 't' }, '<A-I>', function()
+	if file_dir_term and file_dir_term:is_open() then
+		file_dir_term:close()
+		return
+	end
+
+	local dir
+	if vim.bo.filetype == 'oil' then
+		dir = require('oil').get_current_dir()
+	elseif vim.bo.buftype == '' and vim.api.nvim_buf_get_name(0) ~= '' then
+		dir = vim.fn.expand('%:p:h')
+	end
+	dir = dir or vim.fn.getcwd()
+
+	if not file_dir_term then
+		file_dir_term = Terminal:new { direction = 'float', hidden = true, dir = dir }
+		file_dir_term:open()
+	else
+		file_dir_term:open()
+		file_dir_term:change_dir(dir)
+	end
+end, { desc = "Toggle floating terminal in current file's directory" })
 
 local btop_term
 vim.keymap.set({ "n", "t" }, "<A-p>", function()
@@ -181,8 +238,7 @@ vim.keymap.set({ "n", "t" }, "<A-p>", function()
 	end
 end, { desc = "Toggle floating btop-terminal" })
 
-local mellow_config = require("mellow_config")
-mellow_config.setup()
+vim.cmd.colorscheme("zenbones")
 
 require("nvim-treesitter").setup({
 	ensure_installed = {
@@ -205,8 +261,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 local servers = {
-	"lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist", "ts_ls", "jdtls", "texlab",
-	"wgsl_analyzer"
+	"lua_ls", "rust_analyzer", "clangd", "pyright", "tinymist",
 }
 
 require("mason").setup {}
@@ -217,7 +272,8 @@ require("mason-lspconfig").setup {
 }
 
 local blink = require('blink.cmp')
-blink.build():pwait()
+-- Rebuilds only when the native lib for this checkout is missing. :wait() surfaces a failed build.
+blink.build():wait()
 blink.setup {
 	sources = {
 		default = { 'lsp', 'path' },
@@ -316,6 +372,11 @@ local function load_dap()
 			args = { "--port", "${port}" },
 		}
 	}
+	dap.adapters.gdb = {
+		type = "executable",
+		command = "gdb",
+		args = { "--interpreter=dap", "--eval-command", "set print pretty on" },
+	}
 	dap.configurations.cpp = {
 		{
 			name = "Launch file",
@@ -326,6 +387,25 @@ local function load_dap()
 			end,
 			cwd = '${workspaceFolder}',
 			stopOnEntry = false,
+		},
+		{
+			name = "Attach to gdbserver",
+			type = "gdb",
+			request = "attach",
+			target = function()
+				local uri = vim.fn.input("gdbserver [host:]port: ", "1234")
+				if uri == "" then
+					return dap.ABORT
+				end
+				if uri:find(":", 1, true) then
+					return uri
+				end
+				return "localhost:" .. uri
+			end,
+			program = function()
+				return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+			end,
+			cwd = "${workspaceFolder}",
 		},
 	}
 	dap.configurations.c = dap.configurations.cpp
@@ -460,6 +540,7 @@ vim.keymap.set('n', '[c', function() gitsigns.nav_hunk('prev') end, { desc = 'Ju
 vim.keymap.set('n', ']c', function() gitsigns.nav_hunk('next') end, { desc = 'Jump to next git Change (hunk)' })
 
 vim.keymap.set('n', '<leader>gd', ':CodeDiff<CR>', { desc = 'Toggle git split code diff' })
+vim.keymap.set('n', '<leader>gl', ':Gitsigns toggle_linehl<CR>', { desc = 'Toggle git split code diff' })
 
 local telescope = require("telescope")
 local builtin = require('telescope.builtin')
@@ -469,7 +550,8 @@ telescope.setup {
 	defaults = {
 		layout_config = { width = 0.91 },
 		color_devicons = true,
-	},
+		borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+	}
 }
 
 telescope.load_extension("ui-select")
@@ -600,7 +682,30 @@ snacks.setup {
 			diagnostics = false,
 		},
 		enabled = true,
-	}
+	},
+	indent = {
+		enabled = true,
+		indent = {
+			char = "┊",
+		},
+		scope = {
+			char = "┊",
+			only_current = true
+		},
+		chunk = {
+			enabled = true,
+			only_current = false,
+			priority = 200,
+			char = {
+				corner_top = "╭",
+				corner_bottom = "╰",
+				horizontal = "─",
+				vertical = "│",
+				arrow = "⟢",
+			},
+		},
+		animate = { enabled = false },
+	},
 }
 vim.keymap.set('n', '<leader>z', function() snacks.zen() end, { desc = 'Snacks Zen' })
 
@@ -616,7 +721,7 @@ require("fidget").setup {
 			}),
 		},
 		override_vim_notify = true,
-		window = { winblend = 0, border = "rounded" },
+		window = { winblend = 0, border = "single" },
 	},
 	progress = { display = { done_icon = icons.checkmark } },
 }
@@ -651,7 +756,7 @@ require("render-markdown").setup {
 
 require("which-key").setup {
 	delay = 800,
-	win = { border = "rounded" }
+	win = { border = "single" }
 }
 
 require("csvview").setup {}
@@ -669,15 +774,7 @@ vim.api.nvim_create_user_command("LogHours", function()
 end, { desc = "Open work hours CSV file" })
 
 -- Umlaute:
-local chars = {
-	a = 'ä',
-	A = 'Ä',
-	o = 'ö',
-	O = 'Ö',
-	u = 'ü',
-	U = 'Ü',
-	s = 'ß'
-}
+local chars = { a = 'ä', A = 'Ä', o = 'ö', O = 'Ö', u = 'ü', U = 'Ü', s = 'ß' }
 for key, val in pairs(chars) do
 	vim.keymap.set('i', '<M-' .. key .. '>', val, { noremap = true, silent = true })
 end
@@ -706,6 +803,14 @@ vim.keymap.set(
 	{ desc = "Telescope: search yank clipboard (history)" }
 )
 
+vim.keymap.set("n", "<leader>th", function()
+	require("telescope.builtin").colorscheme({
+		enable_preview = true,
+        	ignore_builtins = true
+	})
+end, { desc = "Switch theme with live preview" })
+
+
 require("daily-notes").setup {}
 vim.keymap.set('n', '<leader>nn', ":DailyNote<CR>", { desc = "New daily Note" })
 vim.keymap.set('n', '<leader>sn', function()
@@ -727,7 +832,7 @@ oil.setup {
 	},
 	preview_split = "right",
 	float = {
-		border = "rounded",
+		border = "single",
 		preview_split = "right",
 		padding = 4,
 		override = function(conf)
@@ -745,7 +850,7 @@ vim.keymap.set('n', '<leader>dy', ":DockyardFloat<CR>", { desc = "Open Dock-Yard
 local fluoride = require("fluoride")
 fluoride.setup {
 	window = {
-		border = "rounded",
+		border = "single",
 	},
 }
 vim.keymap.set('n', '<A-\'>', fluoride.toggle, { desc = "Toggle Fluoride" })
@@ -797,16 +902,6 @@ require("trouble").setup {}
 vim.keymap.set("n", "<leader>qq", "<cmd>Trouble diagnostics toggle<CR>", { desc = "Diagnostics (Trouble)" })
 vim.keymap.set("n", "<leader>qx", "<cmd>Trouble qflist toggle<CR>", { desc = "Quickfix (Trouble)" })
 
-local opts = {
-	indent = { char = '' }
-}
-require("ibl").setup(require("indent-rainbowline").make_opts(opts, {
-	color_transparency = 0.15,
-	colors = mellow_config.ibl_rainbow_colors()
-}))
-
-require("left")
-
 require("crazy-coverage").setup {
 	coverage_dirs = {
 		"target/llvm-cov-target",
@@ -814,12 +909,31 @@ require("crazy-coverage").setup {
 	}
 }
 
+local is_libtee_initialized = false
+local function lazyInitLibtee()
+	if not is_libtee_initialized then
+		require('litee.lib').setup {}
+		require('litee.calltree').setup {
+			auto_highlight = false,
+		}
+		is_libtee_initialized = true
+	end
+end
+
+vim.api.nvim_create_user_command("IncommingCalls", function()
+	lazyInitLibtee()
+	vim.lsp.buf.incoming_calls()
+end, { desc = "Uses libtee to show incomming calls in a tree" })
+
+vim.api.nvim_create_user_command("OutgoingCalls", function()
+	lazyInitLibtee()
+	vim.lsp.buf.outgoing_calls()
+end, { desc = "Uses libtee to show outgoing calls in a tree" })
+
+vim.keymap.set('n', 'grI', ":IncommingCalls<CR>", { desc = 'Libtee Incomming Calls' })
+vim.keymap.set('n', 'grO', ":OutgoingCalls<CR>", { desc = 'Libtee Outgoing Calls' })
+
 -- Init private work plugins:
 require("work_private").setup {
 	capabilities = capabilities
 }
-
-vim.keymap.set('n', '<leader>kb', ':K3Build<CR>', { desc = 'K3 TTCN-3 build' })
-vim.keymap.set('n', '<leader>kr', ':K3Run<CR>', { desc = 'K3 TTCN-3 run' })
-vim.keymap.set('n', '<leader>kd', ':K3Disassemble<CR>', { desc = 'K3 TTCN-3 disassemble' })
-vim.keymap.set('n', '<leader>ko', ':K3Objdump<CR>', { desc = 'K3 TTCN-3 object dump' })
